@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Dashboard | DinControl</title>
+
+    <link rel="stylesheet" href="Principal.css">
+</head>
+
+<body>
+
+    <div class="conteudo-principal">
+
+        <img
+            src="Assets/Logo.png"
+            alt="DinControl"
+            class="logo-dincontrol"
+        >
+
+        <img
+            src="Assets/coin.png"
+            alt="Mascote DinControl"
+            class="Coin"
+        >
+
+        <button class="botao-perfil" type="button">
+            <img
+                src="Assets/perfil.png"
+                alt="Perfil"
+                class="perfil"
+            >
+        </button>
+
+    </div>
+    
+    <div class="area-saldo">
+
+    <button class="botao-adicionar" id="abrirTransacao" type="button">
+        +
+    </button>
+
+<div class="painel-transacao" id="painelTransacao">
+
+    <p class="titulo-transacao">Nova Transação</p>
+
+    <!-- ENTRADA -->
+    <div class="linha-transacao entrada">
+
+        <span class="bolinha entrada-cor"></span>
+
+        <span class="cifrao">R$:</span>
+
+        <input
+            type="number"
+            id="valorEntrada"
+            step="0.01"
+            min="0"
+            placeholder="0,00"
+        >
+
+        <select id="categoriaEntrada">
+            <option value=""></option>
+            <option value="Salario">Salário</option>
+            <option value="Investimento">Investimento</option>
+            <option value="Outros">Outros</option>
+        </select>
+
+    </div>
+
+
+    <!-- SAÍDA -->
+    <div class="linha-transacao">
+
+    <span class="bolinha saida-cor"></span>
+
+    <span class="cifrao">R$:</span>
+
+    <input
+        type="number"
+        id="valorSaida"
+        step="0.01"
+        min="0"
+        placeholder="0,00"
+    >
+
+    <div class="area-seta">
+        <select id="categoriaSaida">
+            <option value=""></option>
+            <option value="Alimentacao">Alimentação</option>
+            <option value="Locomocao">Locomoção</option>
+            <option value="Lazer">Lazer</option>
+            <option value="Educacao">Educação</option>
+            <option value="Investimento">Investimento</option>
+            <option value="Outros">Outros</option>
+        </select>
+    </div>
+
+</div>
+
+
+    <button id="confirmarTransacao" class="confirmar-transacao" type="button">
+        CONFIRMAR
+    </button>
+
+    <p id="mensagemTransacao"></p>
+
+</div>
+
+    <div class="saldo-box">
+
+        <div class="saldo-titulo">
+            Saldo Atual
+        </div>
+
+        <div class="saldo-valor" id="valorSaldo">
+            R$ 0,00
+        </div>
+
+    </div>
+
+</div>
+
+<div class="card-grafico-mensal">
+
+    <h2>GRÁFICO MENSAL</h2>
+
+    <div class="linha-titulo"></div>
+
+    <div class="grafico-mensal-container">
+        <canvas id="graficoMensal"></canvas>
+    </div>
+    
+</div>
+
+
+    <div class="card-entrada-saida">
+
+    <div class="cabecalho-entrada-saida">
+        <h2>ENTRADA/SAÍDA</h2>
+
+        <span class="indicador-verde" id="indicadorSaldo"></span> 
+    </div>
+
+    <div class="linha-card"></div>
+
+
+    <div class="resumo-item">
+        <strong>Entrada:</strong>
+
+        <span id="totalEntrada">
+            R$ 0,00
+        </span>
+    </div>
+
+
+    <div class="resumo-item">
+        <strong>Saída:</strong>
+
+        <span id="totalSaida">
+            R$ 0,00
+        </span>
+    </div>
+
+
+    <div class="resumo-item">
+        <strong>Investimento:</strong>
+
+        <span id="totalInvestimento">
+            R$ 0,00
+        </span>
+    </div>
+
+</div>
+
+<div class="card-grafico-saida">
+
+    <h2>GRÁFICO DE SAÍDA</h2>
+
+    <div class="linha-grafico-saida"></div>
+
+    <div class="grafico-saida-container">
+        <canvas id="graficoSaida"></canvas>
+    </div>
+
+</div>
+
+<div class="card-grafico-investimento">
+
+    <h2>INVESTIMENTO</h2>
+
+    <div class="linha-grafico-investimento"></div>
+
+    <div class="grafico-investimento-container">
+        <canvas id="graficoInvestimento"></canvas>
+    </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- Plugin para % do grafico -->
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+
+<script src="principal.js"></script>
+
+<script src="principal.js"></script>
+</body>
+</html>

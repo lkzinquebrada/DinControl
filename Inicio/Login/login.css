@@ -1,0 +1,191 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+
+    padding-top: 100px;
+
+    background-image: url("Assets/Background.png");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    font-family: Arial, sans-serif;
+}
+
+.login {
+    width: 420px;
+    padding: 40px;
+    
+    background-color: white;
+    border-radius: 15px;
+}
+
+.login .T {
+    width: 100%;
+    text-align: center;
+    margin-top: 12px;
+    font-size: 35px;
+    color: #000000;
+}
+.login > .SBT {
+    margin: -20px 0 10px 0;
+    text-align: center;
+    color: #777;
+    font-size: 14px;
+}
+
+#formLogin {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+#formLogin label {
+    margin-top: 10px;
+    font-size: 13px;
+}
+
+#formLogin input {
+    width: 100%;
+    height: 45px;
+
+    padding: 0 15px;
+
+    border: 1px solid #ccc;
+    border-radius: 10px;
+
+    outline: none;
+}
+
+#formLogin input:focus {
+    border-color: #0d6efd;
+}
+
+#formLogin > button {
+    height: 45px;
+    margin-top: 20px;
+
+    border: none;
+    border-radius: 10px;
+
+    background: #0d6efd;
+    color: white;
+
+    cursor: pointer;
+}
+
+#formLogin > button:hover {
+    background: #095ed7;
+}
+
+
+/* CAMPO DA SENHA */
+
+.CampoSenha {
+    position: relative;
+    width: 100%;
+    
+}
+
+.CampoSenha input {
+    padding-right: 50px;
+    
+}
+
+.botao-olho {
+    position: absolute;
+
+    right: 12px;
+    top: 50%;
+
+    transform: translateY(-50%);
+
+    width: 30px;
+    height: 30px;
+
+    padding: 0;
+
+    border: none;
+    background: transparent;
+
+    cursor: pointer;
+}
+
+.botao-olho img {
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
+}
+
+.login-link {
+    width: 100%;
+    text-align: center;
+    margin-top: 12px;
+    font-size: 11px;
+    color: #666;
+}
+
+.login-link a {
+    color: #0d6efd;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.login-link a:hover {
+    text-decoration: underline;
+}
+
+.Coin {
+    position: fixed;
+
+    right: 30px;
+    bottom: 20px;
+
+    width: 600px;
+    height: auto;
+
+    z-index: 2;
+}
+
+.conteudo-login {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: -80px;
+}
+
+.logo-dincontrol {
+    width: 750px;
+    height: auto;
+
+    margin-bottom: -10px;
+}
+
+.login {
+    width: 420px;
+    padding: 40px;
+    background: white;
+    border-radius: 15px;
+}
+
+#mensagem {
+    text-align: center;
+    margin-top: 12px;
+    font-size: 13px;
+    color: #e63946;
+}
+
+.botao-entrar {
+    color: #ffffff;
+    text-decoration: none;
+    font-weight: 600;
+}
+
