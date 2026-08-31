@@ -160,9 +160,7 @@ function autenticarUsuario(req, res, next) {
 // =====================================================
 
 app.get("/", (req, res) => {
-    return res.redirect(
-        "/login/login.html"
-    );
+    return res.redirect("/login/login.html");
 });
 
 
