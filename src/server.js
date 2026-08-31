@@ -6,7 +6,7 @@ const crypto = require("crypto");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const cookieParser = require("cookie-parser");
-
+const path = require("path");
 const app = express();
 
 
@@ -25,7 +25,11 @@ const TEMPO_COOKIE = 7 * 24 * 60 * 60 * 1000;
 
 app.use(express.json());
 app.use(cookieParser());
-app.use(express.static("Inicio"));
+app.use(
+    express.static(
+        path.join(__dirname, "..", "public")
+    )
+);
 
 
 // =====================================================
