@@ -855,7 +855,7 @@ body {
 ========================================================= */
 
 .Coin {
-    position: fixed;
+    position: absolute;
 
     right: var(--coin-right);
     bottom: var(--coin-bottom);
