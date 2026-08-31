@@ -11,6 +11,11 @@
 </head>
 
 <body>
+
+    <div id="loading-screen">
+        <div class="loader"></div>
+    </div>
+
     <div class="conteudo-login">
 
         <img
@@ -18,65 +23,91 @@
             alt="DinControl"
             class="logo-dincontrol"
         >
-    <div class="login">
 
-        <h1 class="T">
-            Seja Bem Vindo(a) 
-        </h1>
+        <div class="login">
 
-        <p class="SBT">
-            Faça login para continuar
-        </p>
+            <h1 class="T">
+                Seja Bem Vindo(a)
+            </h1>
 
-        <form id="formLogin">
-
-            <label for="email">Email</label>
-
-            <input
-                type="email"
-                id="email"
-                placeholder="Digite seu email"
-                required
-            >
-
-            <label for="senha">Senha</label>
-
-            <div class="CampoSenha">
-                <input
-                    type="password"
-                    id="senha"
-                    placeholder="Digite sua senha"
-                    required
-                >
-                <button type="button" 
-                id="toggleSenha"
-                class="botao-olho"
-                >
-                    <img src="Assets/olho.png" alt="Mostrar senha">
-                    </button>
-            </div>
-
-            <button class="botao-entrar" type="submit">
-                Entrar 
-        
-            </button>
-
-            <p class="login-link">
-                Não possui uma conta? <a href="/Cadastro/cadastro.html">Cadastre-se</a>
+            <p class="SBT">
+                Faça login para continuar
             </p>
 
-        </form>
+            <form id="formLogin">
 
-        <p id="mensagem"></p>
+                <label for="email">
+                    Email
+                </label>
 
-        <script src="login.js"></script>
-    </div>  
+                <input
+                    type="email"
+                    id="email"
+                    placeholder="Digite seu email"
+                    required
+                >
+
+                <div class="linha-senha">
+
+                    <label for="senha">
+                        Senha
+                    </label>
+
+                    <div class="Esqueci">
+                        <a href="/Redefinir/redefinir.html">
+                            Esqueceu sua senha?
+                        </a>
+                    </div>
+
+                </div>
+
+                <div class="CampoSenha">
+
+                    <input
+                        type="password"
+                        id="senha"
+                        placeholder="Digite sua senha"
+                    >
+
+                    <button
+                        type="button"
+                        class="botao-olho"
+                    >
+                        <img src="Assets/olho.png">
+                    </button>
+
+                </div>
+
+                <button
+                    class="botao-entrar"
+                    type="submit"
+                >
+                    Entrar
+                </button>
+
+                <p class="login-link">
+                    Não possui uma conta?
+                    <a href="/Cadastro/cadastro.html">
+                        Cadastre-se
+                    </a>
+                </p>
+
+            </form>
+
+            <p id="mensagem"></p>
+
+        </div>
+
+    </div>
 
     <img
-    src="Assets/Coin.png"
-    alt="Coin1"
-    class="Coin"
->
+        src="Assets/Coin.png"
+        alt="Coin1"
+        class="Coin"
+    >
+
+    <script src="login.js"></script>
 
 </body>
+
 </html>

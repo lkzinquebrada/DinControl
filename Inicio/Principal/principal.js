@@ -1,1939 +1,1026 @@
 let graficoMensal = null;
 let graficoSaida = null;
 let graficoInvestimento = null;
+let timerResize = null;
+
+let transacoesCache = [];
+let transacoesCarregadas = false;
+
+const MESES = [
+    "Jan", "Fev", "Mar", "Abr", "Mai", "Jun",
+    "Jul", "Ago", "Set", "Out", "Nov", "Dez"
+];
+
+let usuarioAtual = null;
+let usuarioId = null;
 
 Chart.register(ChartDataLabels);
 
 
-// =========================
-// USUÁRIO LOGADO
-// =========================
+// =====================================================
+// UTILITÁRIOS
+// =====================================================
 
-const usuarioId =
-    localStorage.getItem("usuarioId");
+function tela1024() {
+    return window.innerWidth >= 901 && window.innerWidth <= 1149;
+}
 
-if (!usuarioId) {
+function formatarMoeda(valor) {
+    return Number(valor).toLocaleString("pt-BR", {
+        style: "currency",
+        currency: "BRL"
+    });
+}
 
-    window.location.href =
-        "/login/login.html";
+function normalizarTexto(texto) {
+    return String(texto || "")
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase();
+}
 
+function calcularLimiteMaximo(valores) {
+    const maiorValor = Math.max(...valores);
+
+    if (maiorValor === 0) {
+        return 5000;
+    }
+
+    const limite = Math.ceil(maiorValor / 1000) * 1000;
+
+    return Math.max(limite, 1000);
+}
+
+function formatarEixoMoeda(valor) {
+    return Number(valor).toLocaleString("pt-BR", {
+        style: "currency",
+        currency: "BRL",
+        maximumFractionDigits: 0
+    });
 }
 
 
-document.addEventListener("DOMContentLoaded", () => {
+// =====================================================
+// API
+// =====================================================
 
-    // =========================
-    // ELEMENTOS DO HTML
-    // =========================
-
-    const botaoAdicionar =
-        document.querySelector("#abrirTransacao");
-
-    const painelTransacao =
-        document.querySelector("#painelTransacao");
-
-    const valorEntrada =
-        document.querySelector("#valorEntrada");
-
-    const valorSaida =
-        document.querySelector("#valorSaida");
-
-    const categoriaEntrada =
-        document.querySelector("#categoriaEntrada");
-
-    const categoriaSaida =
-        document.querySelector("#categoriaSaida");
-
-    const confirmarTransacao =
-        document.querySelector("#confirmarTransacao");
-
-    const mensagemTransacao =
-        document.querySelector("#mensagemTransacao");
-
-    const valorSaldo =
-        document.querySelector("#valorSaldo");
-
-
-    // =========================
-    // ABRIR / FECHAR PAINEL
-    // =========================
-
-    botaoAdicionar.addEventListener("click", () => {
-
-        painelTransacao.classList.toggle("ativo");
-
+async function buscarTransacoes() {
+    const resposta = await fetch("/transactions", {
+        credentials: "same-origin"
     });
 
+    if (resposta.status === 401) {
+        window.location.href = "/login/login.html";
+        throw new Error("Sessão expirada");
+    }
 
-    // =========================
-    // CADASTRAR TRANSAÇÃO
-    // =========================
+    if (!resposta.ok) {
+        throw new Error("Erro ao buscar transações");
+    }
 
-    async function cadastrarTransacao(
-        tipo,
-        valor,
-        categoria
-    ) {
+    return resposta.json();
+}
 
-        const resposta =
-            await fetch("/transactions", {
+async function cadastrarTransacao(tipo, valor, categoria) {
+    const resposta = await fetch("/transactions", {
+        method: "POST",
+        credentials: "same-origin",
 
-                method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
 
-                headers: {
-                    "Content-Type": "application/json"
-                },
+        body: JSON.stringify({
+            tipo,
+            valor: Number(valor),
+            categoria
+        })
+    });
 
-                body: JSON.stringify({
+    const resultado = await resposta.json();
 
-                    tipo: tipo,
+    if (!resposta.ok) {
+        throw new Error(
+            resultado.erro || "Erro ao cadastrar transação"
+        );
+    }
 
-                    valor: Number(valor),
+    return resultado;
+}
 
-                    categoria: categoria,
 
-                    // IMPORTANTE:
-                    // salva qual usuário é dono
-                    user_id: Number(usuarioId)
+// =====================================================
+// DOM
+// =====================================================
 
-                })
+const elementos = {
+    nomeUsuario: null,
+    fotoPerfilDashboard: null,
+    botaoPerfil: null,
 
-            });
+    botaoAdicionar: null,
+    painelTransacao: null,
+    valorEntrada: null,
+    valorSaida: null,
+    categoriaEntrada: null,
+    categoriaSaida: null,
+    confirmarTransacao: null,
+    mensagemTransacao: null,
 
+    valorSaldo: null,
+    totalEntrada: null,
+    totalSaida: null,
+    totalInvestimento: null,
+    indicadorSaldo: null,
+
+    botaoMenu: null,
+    menuPaginas: null
+};
+
+function mapearElementos() {
+    elementos.nomeUsuario = document.querySelector("#nomeUsuario");
+    elementos.fotoPerfilDashboard = document.querySelector("#fotoPerfilDashboard");
+    elementos.botaoPerfil = document.querySelector(".botao-perfil");
+
+    elementos.botaoAdicionar = document.querySelector("#abrirTransacao");
+    elementos.painelTransacao = document.querySelector("#painelTransacao");
+    elementos.valorEntrada = document.querySelector("#valorEntrada");
+    elementos.valorSaida = document.querySelector("#valorSaida");
+    elementos.categoriaEntrada = document.querySelector("#categoriaEntrada");
+    elementos.categoriaSaida = document.querySelector("#categoriaSaida");
+    elementos.confirmarTransacao = document.querySelector("#confirmarTransacao");
+    elementos.mensagemTransacao = document.querySelector("#mensagemTransacao");
+
+    elementos.valorSaldo = document.querySelector("#valorSaldo");
+    elementos.totalEntrada = document.querySelector("#totalEntrada");
+    elementos.totalSaida = document.querySelector("#totalSaida");
+    elementos.totalInvestimento = document.querySelector("#totalInvestimento");
+    elementos.indicadorSaldo = document.querySelector("#indicadorSaldo");
+
+    elementos.botaoMenu = document.querySelector("#botaoMenu");
+    elementos.menuPaginas = document.querySelector("#menuPaginas");
+}
+
+
+// =====================================================
+// INICIALIZAÇÃO
+// =====================================================
+
+window.addEventListener("load", () => {
+    const loadingScreen = document.querySelector("#loading-screen");
+
+    setTimeout(() => {
+        loadingScreen?.classList.add("esconder");
+    }, 1500);
+});
+
+document.addEventListener("DOMContentLoaded", async () => {
+    mapearElementos();
+
+    const autenticado =
+        await carregarUsuario();
+
+    if (!autenticado) {
+        return;
+    }
+
+    configurarEventos();
+    carregarDashboard();
+});
+
+async function carregarUsuario() {
+    try {
+        const resposta = await fetch("/me", {
+            credentials: "same-origin"
+        });
+
+        if (!resposta.ok) {
+            window.location.href =
+                "/login/login.html";
+
+            return false;
+        }
 
         const resultado =
             await resposta.json();
 
+        usuarioAtual =
+            resultado.usuario;
 
-        if (!resposta.ok) {
+        usuarioId =
+            usuarioAtual.id;
 
-            throw new Error(
-                resultado.erro ||
-                "Erro ao cadastrar transação"
+        if (elementos.nomeUsuario) {
+            elementos.nomeUsuario.textContent =
+                usuarioAtual.nome;
+        }
+
+        const fotoSalva =
+            localStorage.getItem(
+                `fotoPerfil_${usuarioId}`
             );
 
+        if (
+            elementos.fotoPerfilDashboard &&
+            fotoSalva
+        ) {
+            elementos.fotoPerfilDashboard.src =
+                fotoSalva;
         }
 
+        return true;
 
-        return resultado;
+    } catch (erro) {
+        console.error(
+            "Erro ao verificar sessão:",
+            erro
+        );
 
+        window.location.href =
+            "/login/login.html";
+
+        return false;
     }
+}
 
+function configurarEventos() {
+    elementos.botaoPerfil?.addEventListener("click", () => {
+        window.location.href = "/Perfil/perfil.html";
+    });
 
-    // =========================
-    // BOTÃO CONFIRMAR
-    // =========================
+    elementos.botaoAdicionar?.addEventListener("click", () => {
+        elementos.painelTransacao?.classList.toggle("ativo");
+    });
 
-    confirmarTransacao.addEventListener(
+    elementos.confirmarTransacao?.addEventListener(
         "click",
-        async () => {
-
-            const entrada =
-                valorEntrada.value;
-
-            const saida =
-                valorSaida.value;
-
-            const catEntrada =
-                categoriaEntrada.value;
-
-            const catSaida =
-                categoriaSaida.value;
-
-
-            mensagemTransacao.textContent = "";
-
-
-            // Nenhum valor
-            if (!entrada && !saida) {
-
-                mensagemTransacao.textContent =
-                    "Digite um valor de entrada ou saída.";
-
-                mensagemTransacao.classList.remove(
-                    "mensagem-sucesso"
-                );
-
-                mensagemTransacao.classList.add(
-                    "mensagem-erro"
-                );
-
-                return;
-            }
-
-
-            // Entrada e saída juntas
-            if (entrada && saida) {
-
-                mensagemTransacao.textContent =
-                    "Preencha apenas entrada ou saída.";
-
-                mensagemTransacao.classList.remove(
-                    "mensagem-sucesso"
-                );
-
-                mensagemTransacao.classList.add(
-                    "mensagem-erro"
-                );
-
-                return;
-            }
-
-
-            // Entrada inválida
-            if (
-                entrada &&
-                Number(entrada) <= 0
-            ) {
-
-                mensagemTransacao.textContent =
-                    "Digite um valor de entrada válido.";
-
-                mensagemTransacao.classList.remove(
-                    "mensagem-sucesso"
-                );
-
-                mensagemTransacao.classList.add(
-                    "mensagem-erro"
-                );
-
-                return;
-            }
-
-
-            // Saída inválida
-            if (
-                saida &&
-                Number(saida) <= 0
-            ) {
-
-                mensagemTransacao.textContent =
-                    "Digite um valor de saída válido.";
-
-                mensagemTransacao.classList.remove(
-                    "mensagem-sucesso"
-                );
-
-                mensagemTransacao.classList.add(
-                    "mensagem-erro"
-                );
-
-                return;
-            }
-
-
-            // Entrada sem categoria
-            if (
-                entrada &&
-                !catEntrada
-            ) {
-
-                mensagemTransacao.textContent =
-                    "Selecione uma categoria para a entrada.";
-
-                mensagemTransacao.classList.remove(
-                    "mensagem-sucesso"
-                );
-
-                mensagemTransacao.classList.add(
-                    "mensagem-erro"
-                );
-
-                return;
-            }
-
-
-            // Saída sem categoria
-            if (
-                saida &&
-                !catSaida
-            ) {
-
-                mensagemTransacao.textContent =
-                    "Selecione uma categoria para a saída.";
-
-                mensagemTransacao.classList.remove(
-                    "mensagem-sucesso"
-                );
-
-                mensagemTransacao.classList.add(
-                    "mensagem-erro"
-                );
-
-                return;
-            }
-
-
-            try {
-
-                // ENTRADA
-                if (entrada) {
-
-                    await cadastrarTransacao(
-                        "ENTRADA",
-                        entrada,
-                        catEntrada
-                    );
-
-                }
-
-
-                // SAÍDA
-                if (saida) {
-
-                    await cadastrarTransacao(
-                        "SAIDA",
-                        saida,
-                        catSaida
-                    );
-
-                }
-
-
-                mensagemTransacao.textContent =
-                    "Transação cadastrada com sucesso!";
-
-                mensagemTransacao.classList.remove(
-                    "mensagem-erro"
-                );
-
-                mensagemTransacao.classList.add(
-                    "mensagem-sucesso"
-                );
-
-
-                // Limpar campos
-                valorEntrada.value = "";
-                valorSaida.value = "";
-
-                categoriaEntrada.value = "";
-                categoriaSaida.value = "";
-
-
-                // Atualizar dashboard
-                await carregarSaldo();
-
-                await carregarResumoEntradaSaida();
-
-                await carregarGraficoMensal();
-
-                await carregarGraficoSaida();
-
-                await carregarGraficoInvestimento();
-
-
-            } catch (erro) {
-
-                console.error(
-                    "Erro ao cadastrar:",
-                    erro
-                );
-
-
-                mensagemTransacao.textContent =
-                    "Erro ao cadastrar transação.";
-
-                mensagemTransacao.classList.remove(
-                    "mensagem-sucesso"
-                );
-
-                mensagemTransacao.classList.add(
-                    "mensagem-erro"
-                );
-
-            }
-
-        }
+        confirmarCadastroTransacao
     );
 
-
-    // =========================
-    // CARREGAR SALDO
-    // =========================
-
-    async function carregarSaldo() {
-
-        try {
-
-            const resposta =
-                await fetch(
-                    `/transactions/${usuarioId}`
-                );
-
-
-            if (!resposta.ok) {
-
-                throw new Error(
-                    "Erro ao buscar transações"
-                );
-
-            }
-
-
-            const transacoes =
-                await resposta.json();
-
-
-            let entradas = 0;
-            let saidas = 0;
-
-
-            transacoes.forEach(
-                (transacao) => {
-
-                    const valor =
-                        Number(
-                            transacao.valor
-                        );
-
-
-                    if (
-                        transacao.tipo ===
-                        "ENTRADA"
-                    ) {
-
-                        entradas += valor;
-
-                    }
-
-
-                    if (
-                        transacao.tipo ===
-                        "SAIDA"
-                    ) {
-
-                        saidas += valor;
-
-                    }
-
-                }
-            );
-
-
-            const saldo =
-                entradas - saidas;
-
-
-            valorSaldo.textContent =
-                saldo.toLocaleString(
-                    "pt-BR",
-                    {
-                        style: "currency",
-                        currency: "BRL"
-                    }
-                );
-
-
-        } catch (erro) {
-
-            console.error(
-                "Erro ao carregar saldo:",
-                erro
-            );
-
-        }
-
-    }
-
-
-    // =========================
-    // RESUMO ENTRADA / SAÍDA
-    // =========================
-
-    async function carregarResumoEntradaSaida() {
-
-        try {
-
-            const totalEntrada =
-                document.querySelector(
-                    "#totalEntrada"
-                );
-
-            const totalSaida =
-                document.querySelector(
-                    "#totalSaida"
-                );
-
-            const totalInvestimento =
-                document.querySelector(
-                    "#totalInvestimento"
-                );
-
-            const indicadorSaldo =
-                document.querySelector(
-                    "#indicadorSaldo"
-                );
-
-
-            const resposta =
-                await fetch(
-                    `/transactions/${usuarioId}`
-                );
-
-
-            if (!resposta.ok) {
-
-                throw new Error(
-                    "Erro ao buscar transações"
-                );
-
-            }
-
-
-            const transacoes =
-                await resposta.json();
-
-
-            let entradas = 0;
-            let saidas = 0;
-            let investimentos = 0;
-
-
-            transacoes.forEach(
-                (transacao) => {
-
-                    const valor =
-                        Number(
-                            transacao.valor
-                        );
-
-
-                    if (
-                        transacao.tipo ===
-                        "ENTRADA"
-                    ) {
-
-                        entradas += valor;
-
-                    }
-
-
-                    if (
-                        transacao.tipo ===
-                        "SAIDA"
-                    ) {
-
-                        saidas += valor;
-
-                    }
-
-
-                    if (
-                        transacao.categoria &&
-                        transacao.categoria
-                            .toLowerCase() ===
-                        "investimento"
-                    ) {
-
-                        investimentos += valor;
-
-                    }
-
-                }
-            );
-
-
-            // Bolinha vermelha se saída
-            // for maior que entrada
-
-            if (indicadorSaldo) {
-
-                if (saidas > entradas) {
-
-                    indicadorSaldo
-                        .classList
-                        .add(
-                            "indicador-vermelho"
-                        );
-
-                } else {
-
-                    indicadorSaldo
-                        .classList
-                        .remove(
-                            "indicador-vermelho"
-                        );
-
-                }
-
-            }
-
-
-            if (totalEntrada) {
-
-                totalEntrada.textContent =
-                    entradas.toLocaleString(
-                        "pt-BR",
-                        {
-                            style: "currency",
-                            currency: "BRL"
-                        }
-                    );
-
-            }
-
-
-            if (totalSaida) {
-
-                totalSaida.textContent =
-                    saidas.toLocaleString(
-                        "pt-BR",
-                        {
-                            style: "currency",
-                            currency: "BRL"
-                        }
-                    );
-
-            }
-
-
-            if (totalInvestimento) {
-
-                totalInvestimento.textContent =
-                    investimentos.toLocaleString(
-                        "pt-BR",
-                        {
-                            style: "currency",
-                            currency: "BRL"
-                        }
-                    );
-
-            }
-
-
-        } catch (erro) {
-
-            console.error(
-                "Erro ao carregar resumo:",
-                erro
-            );
-
-        }
-
-    }
-
-
-    // =========================
-    // CARREGAR DASHBOARD
-    // =========================
-
-    carregarSaldo();
-
-    carregarResumoEntradaSaida();
-
-    carregarGraficoMensal();
-
-    carregarGraficoSaida();
-
-    carregarGraficoInvestimento();
-
-});
-
-// ========================================
-// GRÁFICO MENSAL
-// ========================================
-
-async function carregarGraficoMensal() {
-
-    try {
-
-        const resposta =
-            await fetch(
-                `/transactions/${usuarioId}`
-            );
-
-
-        if (!resposta.ok) {
-
-            throw new Error(
-                "Erro ao buscar transações"
-            );
-
-        }
-
-
-        const transacoes =
-            await resposta.json();
-
-
-        const entradas = [
-            0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0
-        ];
-
-
-        const saidas = [
-            0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0
-        ];
-
-
-        transacoes.forEach(
-            (transacao) => {
-
-                if (!transacao.data) {
-                    return;
-                }
-
-
-                const data =
-                    new Date(
-                        transacao.data
-                    );
-
-
-                if (
-                    isNaN(
-                        data.getTime()
-                    )
-                ) {
-                    return;
-                }
-
-
-                const mes =
-                    data.getMonth();
-
-
-                const valor =
-                    Number(
-                        transacao.valor
-                    );
-
-
-                if (
-                    transacao.tipo ===
-                    "ENTRADA"
-                ) {
-
-                    entradas[mes] += valor;
-
-                }
-
-
-                if (
-                    transacao.tipo ===
-                    "SAIDA"
-                ) {
-
-                    saidas[mes] += valor;
-
-                }
-
-            }
-        );
-
-
-        criarGraficoMensal(
-            entradas,
-            saidas
-        );
-
-
-    } catch (erro) {
-
-        console.error(
-            "Erro no gráfico mensal:",
-            erro
-        );
-
-    }
-
+    configurarMenu();
 }
 
 
-function criarGraficoMensal(
-    entradas,
-    saidas
-) {
+// =====================================================
+// TRANSAÇÕES
+// =====================================================
 
-    const canvas =
-        document.querySelector(
-            "#graficoMensal"
-        );
+function obterDadosFormularioTransacao() {
+    return {
+        entrada: elementos.valorEntrada?.value.trim() || "",
+        saida: elementos.valorSaida?.value.trim() || "",
+        categoriaEntrada: elementos.categoriaEntrada?.value || "",
+        categoriaSaida: elementos.categoriaSaida?.value || ""
+    };
+}
 
+function validarTransacao(dados) {
+    const {
+        entrada,
+        saida,
+        categoriaEntrada,
+        categoriaSaida
+    } = dados;
 
-    if (!canvas) {
+    if (!entrada && !saida) {
+        return "Digite um valor de entrada ou saída.";
+    }
+
+    if (entrada && saida) {
+        return "Preencha apenas entrada ou saída.";
+    }
+
+    if (entrada && Number(entrada) <= 0) {
+        return "Digite um valor de entrada válido.";
+    }
+
+    if (saida && Number(saida) <= 0) {
+        return "Digite um valor de saída válido.";
+    }
+
+    if (entrada && !categoriaEntrada) {
+        return "Selecione uma categoria para a entrada.";
+    }
+
+    if (saida && !categoriaSaida) {
+        return "Selecione uma categoria para a saída.";
+    }
+
+    return null;
+}
+
+function limparMensagemTransacao() {
+    if (!elementos.mensagemTransacao) {
         return;
     }
 
+    elementos.mensagemTransacao.classList.remove(
+        "mensagem-erro",
+        "mensagem-sucesso"
+    );
 
-    if (graficoMensal) {
+    elementos.mensagemTransacao.textContent = "";
+}
 
-        graficoMensal.destroy();
-
+function mostrarErro(mensagem) {
+    if (!elementos.mensagemTransacao) {
+        return;
     }
 
+    elementos.mensagemTransacao.textContent = mensagem;
+    elementos.mensagemTransacao.classList.remove("mensagem-sucesso");
+    elementos.mensagemTransacao.classList.add("mensagem-erro");
+}
 
-    const maiorValor =
-        Math.max(
-            ...entradas,
-            ...saidas
+function mostrarSucesso(mensagem) {
+    if (!elementos.mensagemTransacao) {
+        return;
+    }
+
+    elementos.mensagemTransacao.textContent = mensagem;
+    elementos.mensagemTransacao.classList.remove("mensagem-erro");
+    elementos.mensagemTransacao.classList.add("mensagem-sucesso");
+}
+
+function limparFormularioTransacao() {
+    elementos.valorEntrada.value = "";
+    elementos.valorSaida.value = "";
+    elementos.categoriaEntrada.value = "";
+    elementos.categoriaSaida.value = "";
+}
+
+async function confirmarCadastroTransacao() {
+    limparMensagemTransacao();
+
+    const dados = obterDadosFormularioTransacao();
+    const erroValidacao = validarTransacao(dados);
+
+    if (erroValidacao) {
+        mostrarErro(erroValidacao);
+        return;
+    }
+
+    try {
+        if (dados.entrada) {
+            await cadastrarTransacao(
+                "ENTRADA",
+                dados.entrada,
+                dados.categoriaEntrada
+            );
+        }
+
+        if (dados.saida) {
+            await cadastrarTransacao(
+                "SAIDA",
+                dados.saida,
+                dados.categoriaSaida
+            );
+        }
+
+        mostrarSucesso("Transação cadastrada com sucesso!");
+        limparFormularioTransacao();
+
+        await carregarDashboard();
+
+    } catch (erro) {
+        console.error("Erro ao cadastrar:", erro);
+        mostrarErro("Erro ao cadastrar transação.");
+    }
+}
+
+
+// =====================================================
+// DASHBOARD
+// =====================================================
+
+async function carregarDashboard() {
+    try {
+        const transacoes = await buscarTransacoes();
+
+        transacoesCache = transacoes;
+        transacoesCarregadas = true;
+
+        atualizarSaldo(transacoes);
+        atualizarResumoEntradaSaida(transacoes);
+        carregarGraficoMensal(transacoes);
+        carregarGraficoSaida(transacoes);
+        carregarGraficoInvestimento(transacoes);
+
+    } catch (erro) {
+        console.error("Erro ao carregar dashboard:", erro);
+    }
+}
+
+function calcularTotais(transacoes) {
+    let entradas = 0;
+    let saidas = 0;
+    let investimentos = 0;
+
+    transacoes.forEach((transacao) => {
+        const valor = Number(transacao.valor) || 0;
+
+        if (transacao.tipo === "ENTRADA") {
+            entradas += valor;
+        }
+
+        if (transacao.tipo === "SAIDA") {
+            saidas += valor;
+        }
+
+        if (normalizarTexto(transacao.categoria) === "investimento") {
+            investimentos += valor;
+        }
+    });
+
+    return {
+        entradas,
+        saidas,
+        investimentos
+    };
+}
+
+function atualizarSaldo(transacoes) {
+    const { entradas, saidas } = calcularTotais(transacoes);
+    const saldo = entradas - saidas;
+
+    if (elementos.valorSaldo) {
+        elementos.valorSaldo.textContent = formatarMoeda(saldo);
+    }
+}
+
+function atualizarResumoEntradaSaida(transacoes) {
+    const {
+        entradas,
+        saidas,
+        investimentos
+    } = calcularTotais(transacoes);
+
+    elementos.indicadorSaldo?.classList.toggle(
+        "indicador-vermelho",
+        saidas > entradas
+    );
+
+    if (elementos.totalEntrada) {
+        elementos.totalEntrada.textContent = formatarMoeda(entradas);
+    }
+
+    if (elementos.totalSaida) {
+        elementos.totalSaida.textContent = formatarMoeda(saidas);
+    }
+
+    if (elementos.totalInvestimento) {
+        elementos.totalInvestimento.textContent = formatarMoeda(investimentos);
+    }
+}
+
+
+// =====================================================
+// DADOS DOS GRÁFICOS
+// =====================================================
+
+function obterMovimentacaoMensal(transacoes) {
+    const entradas = Array(12).fill(0);
+    const saidas = Array(12).fill(0);
+
+    transacoes.forEach((transacao) => {
+        if (!transacao.data) {
+            return;
+        }
+
+        const data = new Date(transacao.data);
+
+        if (isNaN(data.getTime())) {
+            return;
+        }
+
+        const mes = data.getMonth();
+        const valor = Number(transacao.valor) || 0;
+
+        if (transacao.tipo === "ENTRADA") {
+            entradas[mes] += valor;
+        }
+
+        if (transacao.tipo === "SAIDA") {
+            saidas[mes] += valor;
+        }
+    });
+
+    return { entradas, saidas };
+}
+
+function obterSaidasPorCategoria(transacoes) {
+    const categorias = {
+        Alimentacao: 0,
+        Locomocao: 0,
+        Investimento: 0,
+        Lazer: 0,
+        Educacao: 0,
+        Outros: 0
+    };
+
+    transacoes.forEach((transacao) => {
+        if (transacao.tipo !== "SAIDA") {
+            return;
+        }
+
+        const valor = Number(transacao.valor) || 0;
+        const categoria = normalizarTexto(
+            transacao.categoria || "Outros"
         );
 
+        switch (categoria) {
+            case "alimentacao":
+                categorias.Alimentacao += valor;
+                break;
 
-    let limiteMaximo;
+            case "locomocao":
+                categorias.Locomocao += valor;
+                break;
 
+            case "investimento":
+                categorias.Investimento += valor;
+                break;
 
-    if (maiorValor === 0) {
+            case "lazer":
+                categorias.Lazer += valor;
+                break;
 
-        limiteMaximo = 5000;
+            case "educacao":
+                categorias.Educacao += valor;
+                break;
 
-    } else {
+            default:
+                categorias.Outros += valor;
+        }
+    });
 
-        limiteMaximo =
-            Math.ceil(
-                maiorValor / 1000
-            ) * 1000;
+    return categorias;
+}
 
-    }
+function obterInvestimentosMensais(transacoes) {
+    const investimentos = Array(12).fill(0);
 
+    transacoes.forEach((transacao) => {
+        if (!transacao.data || !transacao.categoria) {
+            return;
+        }
 
-    if (limiteMaximo < 1000) {
+        if (normalizarTexto(transacao.categoria) !== "investimento") {
+            return;
+        }
 
-        limiteMaximo = 1000;
+        const data = new Date(transacao.data);
 
-    }
+        if (isNaN(data.getTime())) {
+            return;
+        }
 
+        const valor = Number(transacao.valor);
 
-    graficoMensal =
-        new Chart(
-            canvas,
-            {
+        if (isNaN(valor)) {
+            return;
+        }
 
-                type: "bar",
+        investimentos[data.getMonth()] += valor;
+    });
 
-
-                data: {
-
-                    labels: [
-                        "Jan",
-                        "Fev",
-                        "Mar",
-                        "Abr",
-                        "Mai",
-                        "Jun",
-                        "Jul",
-                        "Ago",
-                        "Set",
-                        "Out",
-                        "Nov",
-                        "Dez"
-                    ],
-
-
-                    datasets: [
-
-                        {
-                            label: "Saída",
-
-                            data: saidas,
-
-                            backgroundColor:
-                                "#ff4b45",
-
-                            borderRadius: 2
-                        },
+    return investimentos;
+}
 
 
-                        {
-                            label: "Entrada",
+// =====================================================
+// CONFIGURAÇÕES COMPARTILHADAS DOS GRÁFICOS
+// =====================================================
 
-                            data: entradas,
+function obterPaddingGrafico(compacto) {
+    return {
+        left: compacto ? 2 : 5,
+        right: compacto ? 2 : 5,
+        top: compacto ? 0 : 3,
+        bottom: compacto ? 0 : 3
+    };
+}
 
-                            backgroundColor:
-                                "#9abd43",
+function obterEixosGrafico(limiteMaximo, compacto) {
+    return {
+        x: {
+            grid: {
+                display: false
+            },
 
-                            borderRadius: 2
-                        }
+            ticks: {
+                color: "#ffffff",
+                maxRotation: 0,
+                minRotation: 0,
+                autoSkip: false,
+                padding: compacto ? 2 : 5,
 
-                    ]
+                font: {
+                    size: compacto ? 7 : 10
+                }
+            }
+        },
 
+        y: {
+            beginAtZero: true,
+            max: limiteMaximo,
+
+            grid: {
+                color: "rgba(255,255,255,0.08)"
+            },
+
+            ticks: {
+                color: "#ffffff",
+                stepSize: limiteMaximo / 5,
+
+                font: {
+                    size: compacto ? 7 : 9
                 },
 
-
-                options: {
-
-                    responsive: true,
-
-                    maintainAspectRatio:
-                        false,
-
-
-                    animation: {
-
-                        duration: 500
-
-                    },
-
-
-                    plugins: {
-
-                        // Não mostrar valores
-                        // nas barras
-
-                        datalabels: {
-
-                            display: false
-
-                        },
-
-
-                        legend: {
-
-                            position: "top",
-
-                            align: "end",
-
-                            labels: {
-
-                                color:
-                                    "#ffffff",
-
-                                usePointStyle:
-                                    true,
-
-                                pointStyle:
-                                    "circle",
-
-                                boxWidth: 6,
-
-                                boxHeight: 6,
-
-                                padding: 8,
-
-                                font: {
-
-                                    size: 15
-
-                                }
-
-                            }
-
-                        },
-
-
-                        tooltip: {
-
-                            callbacks: {
-
-                                label:
-                                    function (
-                                        context
-                                    ) {
-
-                                        const valor =
-                                            Number(
-                                                context.raw
-                                            );
-
-
-                                        return (
-                                            context
-                                                .dataset
-                                                .label +
-                                            ": " +
-                                            valor
-                                                .toLocaleString(
-                                                    "pt-BR",
-                                                    {
-                                                        style:
-                                                            "currency",
-
-                                                        currency:
-                                                            "BRL"
-                                                    }
-                                                )
-                                        );
-
-                                    }
-
-                            }
-
-                        }
-
-                    },
-
-
-                    scales: {
-
-                        x: {
-
-                            grid: {
-
-                                display:
-                                    false
-
-                            },
-
-
-                            ticks: {
-
-                                color:
-                                    "#ffffff",
-
-                                font: {
-
-                                    size: 10
-
-                                }
-
-                            }
-
-                        },
-
-
-                        y: {
-
-                            beginAtZero:
-                                true,
-
-                            max:
-                                limiteMaximo,
-
-
-                            grid: {
-
-                                color:
-                                    "rgba(255,255,255,0.08)"
-
-                            },
-
-
-                            ticks: {
-
-                                color:
-                                    "#ffffff",
-
-                                stepSize:
-                                    limiteMaximo /
-                                    5,
-
-                                font: {
-
-                                    size: 9
-
-                                },
-
-
-                                callback:
-                                    function (
-                                        valor
-                                    ) {
-
-                                        return valor
-                                            .toLocaleString(
-                                                "pt-BR",
-                                                {
-                                                    style:
-                                                        "currency",
-
-                                                    currency:
-                                                        "BRL",
-
-                                                    maximumFractionDigits:
-                                                        0
-                                                }
-                                            );
-
-                                    }
-
-                            }
-
-                        }
-
-                    }
-
-                }
-
+                callback: formatarEixoMoeda
             }
-        );
-
-}
-
-// ========================================
-// GRÁFICO DE SAÍDA
-// ========================================
-
-async function carregarGraficoSaida() {
-
-    try {
-
-        const resposta =
-            await fetch(
-                `/transactions/${usuarioId}`
-            );
-
-
-        if (!resposta.ok) {
-
-            throw new Error(
-                "Erro ao buscar transações"
-            );
-
         }
-
-
-        const transacoes =
-            await resposta.json();
-
-
-        const categorias = {
-
-            Alimentacao: 0,
-
-            Locomocao: 0,
-
-            Investimento: 0,
-
-            Lazer: 0,
-
-            Educacao: 0,
-
-            Outros: 0
-
-        };
-
-
-        transacoes.forEach(
-            (transacao) => {
-
-                // Somente SAÍDA
-                if (
-                    transacao.tipo !==
-                    "SAIDA"
-                ) {
-
-                    return;
-
-                }
-
-
-                const valor =
-                    Number(
-                        transacao.valor
-                    );
-
-
-                const categoria =
-                    (
-                        transacao.categoria ||
-                        "Outros"
-                    )
-                        .normalize("NFD")
-                        .replace(
-                            /[\u0300-\u036f]/g,
-                            ""
-                        )
-                        .toLowerCase();
-
-
-                if (
-                    categoria ===
-                    "alimentacao"
-                ) {
-
-                    categorias
-                        .Alimentacao +=
-                        valor;
-
-                }
-
-                else if (
-                    categoria ===
-                    "locomocao"
-                ) {
-
-                    categorias
-                        .Locomocao +=
-                        valor;
-
-                }
-
-                else if (
-                    categoria ===
-                    "investimento"
-                ) {
-
-                    categorias
-                        .Investimento +=
-                        valor;
-
-                }
-
-                else if (
-                    categoria ===
-                    "lazer"
-                ) {
-
-                    categorias
-                        .Lazer += valor;
-
-                }
-
-                else if (
-                    categoria ===
-                    "educacao"
-                ) {
-
-                    categorias
-                        .Educacao +=
-                        valor;
-
-                }
-
-                else {
-
-                    categorias
-                        .Outros += valor;
-
-                }
-
-            }
-        );
-
-
-        criarGraficoSaida(
-            categorias
-        );
-
-
-    } catch (erro) {
-
-        console.error(
-            "Erro ao carregar gráfico de saída:",
-            erro
-        );
-
-    }
-
+    };
 }
 
 
-function criarGraficoSaida(
-    categorias
-) {
+// =====================================================
+// GRÁFICO MENSAL
+// =====================================================
 
-    const canvas =
-        document.querySelector(
-            "#graficoSaida"
-        );
+function carregarGraficoMensal(transacoes) {
+    const { entradas, saidas } = obterMovimentacaoMensal(transacoes);
+    criarGraficoMensal(entradas, saidas);
+}
 
+function criarGraficoMensal(entradas, saidas) {
+    const canvas = document.querySelector("#graficoMensal");
 
     if (!canvas) {
         return;
     }
 
+    graficoMensal?.destroy();
 
-    if (graficoSaida) {
+    const compacto = tela1024();
+    const limiteMaximo = calcularLimiteMaximo([
+        ...entradas,
+        ...saidas
+    ]);
 
-        graficoSaida.destroy();
+    graficoMensal = new Chart(canvas, {
+        type: "bar",
 
+        data: {
+            labels: MESES,
+
+            datasets: [
+                {
+                    label: "Saída",
+                    data: saidas,
+                    backgroundColor: "#ff4b45",
+                    borderRadius: 2
+                },
+                {
+                    label: "Entrada",
+                    data: entradas,
+                    backgroundColor: "#9abd43",
+                    borderRadius: 2
+                }
+            ]
+        },
+
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+
+            animation: {
+                duration: 500
+            },
+
+            layout: {
+                padding: obterPaddingGrafico(compacto)
+            },
+
+            plugins: {
+                datalabels: {
+                    display: false
+                },
+
+                legend: {
+                    position: "top",
+                    align: "end",
+
+                    labels: {
+                        color: "#ffffff",
+                        usePointStyle: true,
+                        pointStyle: "circle",
+                        boxWidth: compacto ? 4 : 6,
+                        boxHeight: compacto ? 4 : 6,
+                        padding: compacto ? 5 : 8,
+
+                        font: {
+                            size: compacto ? 9 : 15
+                        }
+                    }
+                },
+
+                tooltip: {
+                    callbacks: {
+                        label(context) {
+                            const valor = Number(context.raw);
+
+                            return (
+                                context.dataset.label +
+                                ": " +
+                                formatarMoeda(valor)
+                            );
+                        }
+                    }
+                }
+            },
+
+            scales: obterEixosGrafico(
+                limiteMaximo,
+                compacto
+            )
+        }
+    });
+}
+
+
+// =====================================================
+// GRÁFICO DE SAÍDA
+// =====================================================
+
+function carregarGraficoSaida(transacoes) {
+    const categorias = obterSaidasPorCategoria(transacoes);
+    criarGraficoSaida(categorias);
+}
+
+function criarGraficoSaida(categorias) {
+    const canvas = document.querySelector("#graficoSaida");
+
+    if (!canvas) {
+        return;
     }
 
+    graficoSaida?.destroy();
+
+    const compacto = tela1024();
 
     const valores = [
-
         categorias.Alimentacao,
-
         categorias.Locomocao,
-
         categorias.Investimento,
-
         categorias.Lazer,
-
         categorias.Educacao,
-
         categorias.Outros
-
     ];
 
+    graficoSaida = new Chart(canvas, {
+        type: "pie",
 
-    graficoSaida =
-        new Chart(
-            canvas,
-            {
+        data: {
+            labels: [
+                "Alimentação",
+                "Locomoção",
+                "Investimento",
+                "Lazer",
+                "Educação",
+                "Outros"
+            ],
 
-                type: "pie",
+            datasets: [
+                {
+                    data: valores,
 
-
-                data: {
-
-                    labels: [
-
-                        "Alimentação",
-
-                        "Locomoção",
-
-                        "Investimento",
-
-                        "Lazer",
-
-                        "Educação",
-
-                        "Outros"
-
+                    backgroundColor: [
+                        "#e51b17",
+                        "#e7b700",
+                        "#ef7d00",
+                        "#65b900",
+                        "#fd00a9",
+                        "#633cff"
                     ],
 
+                    borderWidth: 0
+                }
+            ]
+        },
 
-                    datasets: [
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
 
-                        {
+            layout: {
+                padding: {
+                    left: compacto ? 3 : 5,
+                    right: compacto ? 3 : 5,
+                    top: compacto ? 3 : 5,
+                    bottom: compacto ? 3 : 5
+                }
+            },
 
-                            data:
-                                valores,
+            plugins: {
+                datalabels: {
+                    color: "#ffffff",
 
+                    font: {
+                        size: compacto ? 8 : 10,
+                        weight: "bold"
+                    },
 
-                            backgroundColor: [
+                    formatter(valor, context) {
+                        const dados =
+                            context.chart.data.datasets[0].data;
 
-                                "#e51b17",
+                        const total = dados.reduce(
+                            (soma, numero) =>
+                                soma + Number(numero),
+                            0
+                        );
 
-                                "#e7b700",
-
-                                "#ef7d00",
-
-                                "#65b900",
-
-                                "#fd00a9",
-
-                                "#633cff"
-
-                            ],
-
-
-                            borderWidth:
-                                0
-
+                        if (valor === 0 || total === 0) {
+                            return "";
                         }
 
-                    ]
+                        const porcentagem =
+                            (Number(valor) / total) * 100;
 
+                        return porcentagem.toFixed(0) + "%";
+                    }
                 },
 
+                legend: {
+                    position: "right",
+                    align: "center",
 
-                options: {
+                    labels: {
+                        color: "#ffffff",
+                        usePointStyle: true,
+                        pointStyle: "circle",
+                        boxWidth: compacto ? 5 : 7,
+                        boxHeight: compacto ? 5 : 7,
+                        padding: compacto ? 5 : 11,
 
-                    responsive:
-                        true,
-
-                    maintainAspectRatio:
-                        false,
-
-
-                    plugins: {
-
-                        // PORCENTAGEM
-                        datalabels: {
-
-                            color:
-                                "#ffffff",
-
-                            font: {
-
-                                size: 10,
-
-                                weight:
-                                    "bold"
-
-                            },
-
-
-                            formatter:
-                                function (
-                                    valor,
-                                    context
-                                ) {
-
-                                    const dados =
-                                        context
-                                            .chart
-                                            .data
-                                            .datasets[0]
-                                            .data;
-
-
-                                    const total =
-                                        dados.reduce(
-                                            function (
-                                                soma,
-                                                numero
-                                            ) {
-
-                                                return (
-                                                    soma +
-                                                    Number(
-                                                        numero
-                                                    )
-                                                );
-
-                                            },
-                                            0
-                                        );
-
-
-                                    if (
-                                        valor === 0 ||
-                                        total === 0
-                                    ) {
-
-                                        return "";
-
-                                    }
-
-
-                                    const porcentagem =
-                                        (
-                                            Number(
-                                                valor
-                                            ) /
-                                            total
-                                        ) * 100;
-
-
-                                    return (
-                                        porcentagem
-                                            .toFixed(
-                                                0
-                                            ) +
-                                        "%"
-                                    );
-
-                                }
-
-                        },
-
-
-                        legend: {
-
-                            position:
-                                "right",
-
-                            labels: {
-
-                                color:
-                                    "#ffffff",
-
-                                usePointStyle:
-                                    true,
-
-                                pointStyle:
-                                    "circle",
-
-                                boxWidth:
-                                    7,
-
-                                boxHeight:
-                                    7,
-
-                                padding:
-                                    11,
-
-                                font: {
-
-                                    size: 16
-
-                                }
-
-                            }
-
-                        },
-
-
-                        tooltip: {
-
-                            callbacks: {
-
-                                label:
-                                    function (
-                                        context
-                                    ) {
-
-                                        const valor =
-                                            Number(
-                                                context.raw
-                                            );
-
-
-                                        const dados =
-                                            context
-                                                .dataset
-                                                .data;
-
-
-                                        const total =
-                                            dados.reduce(
-                                                (
-                                                    soma,
-                                                    numero
-                                                ) =>
-                                                    soma +
-                                                    Number(
-                                                        numero
-                                                    ),
-                                                0
-                                            );
-
-
-                                        const porcentagem =
-                                            total > 0
-
-                                                ? (
-                                                    (
-                                                        valor /
-                                                        total
-                                                    ) *
-                                                    100
-                                                ).toFixed(
-                                                    1
-                                                )
-
-                                                : 0;
-
-
-                                        return (
-                                            context.label +
-                                            ": " +
-                                            valor
-                                                .toLocaleString(
-                                                    "pt-BR",
-                                                    {
-                                                        style:
-                                                            "currency",
-
-                                                        currency:
-                                                            "BRL"
-                                                    }
-                                                ) +
-                                            " (" +
-                                            porcentagem +
-                                            "%)"
-                                        );
-
-                                    }
-
-                            }
-
+                        font: {
+                            size: compacto ? 9 : 16
                         }
-
                     }
+                },
 
+                tooltip: {
+                    callbacks: {
+                        label(context) {
+                            const valor = Number(context.raw);
+                            const dados = context.dataset.data;
+
+                            const total = dados.reduce(
+                                (soma, numero) =>
+                                    soma + Number(numero),
+                                0
+                            );
+
+                            const porcentagem = total > 0
+                                ? ((valor / total) * 100).toFixed(1)
+                                : 0;
+
+                            return (
+                                context.label +
+                                ": " +
+                                formatarMoeda(valor) +
+                                " (" +
+                                porcentagem +
+                                "%)"
+                            );
+                        }
+                    }
                 }
-
             }
-        );
-
-}
-
-// ========================================
-// GRÁFICO DE INVESTIMENTO
-// ========================================
-
-async function carregarGraficoInvestimento() {
-
-    try {
-
-        const resposta =
-            await fetch(
-                `/transactions/${usuarioId}`
-            );
-
-
-        if (!resposta.ok) {
-
-            throw new Error(
-                "Erro ao buscar transações"
-            );
-
         }
-
-
-        const transacoes =
-            await resposta.json();
-
-
-        const investimentos = [
-            0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0
-        ];
-
-
-        transacoes.forEach(
-            (transacao) => {
-
-                if (!transacao.data) {
-                    return;
-                }
-
-
-                if (!transacao.categoria) {
-                    return;
-                }
-
-
-                const categoria =
-                    transacao.categoria
-                        .normalize("NFD")
-                        .replace(
-                            /[\u0300-\u036f]/g,
-                            ""
-                        )
-                        .toLowerCase();
-
-
-                if (
-                    categoria !==
-                    "investimento"
-                ) {
-
-                    return;
-
-                }
-
-
-                const data =
-                    new Date(
-                        transacao.data
-                    );
-
-
-                if (
-                    isNaN(
-                        data.getTime()
-                    )
-                ) {
-
-                    return;
-
-                }
-
-
-                const mes =
-                    data.getMonth();
-
-
-                const valor =
-                    Number(
-                        transacao.valor
-                    );
-
-
-                if (isNaN(valor)) {
-                    return;
-                }
-
-
-                investimentos[mes] +=
-                    valor;
-
-            }
-        );
-
-
-        criarGraficoInvestimento(
-            investimentos
-        );
-
-
-    } catch (erro) {
-
-        console.error(
-            "Erro ao carregar gráfico de investimento:",
-            erro
-        );
-
-    }
-
+    });
 }
 
 
-function criarGraficoInvestimento(
-    investimentos
-) {
+// =====================================================
+// GRÁFICO DE INVESTIMENTO
+// =====================================================
 
-    const canvas =
-        document.querySelector(
-            "#graficoInvestimento"
-        );
+function carregarGraficoInvestimento(transacoes) {
+    const investimentos = obterInvestimentosMensais(transacoes);
+    criarGraficoInvestimento(investimentos);
+}
 
+function criarGraficoInvestimento(investimentos) {
+    const canvas = document.querySelector("#graficoInvestimento");
 
     if (!canvas) {
         return;
     }
 
+    graficoInvestimento?.destroy();
 
-    if (graficoInvestimento) {
+    const compacto = tela1024();
+    const limiteMaximo = calcularLimiteMaximo(investimentos);
 
-        graficoInvestimento
-            .destroy();
+    graficoInvestimento = new Chart(canvas, {
+        type: "bar",
 
-    }
+        data: {
+            labels: MESES,
 
+            datasets: [
+                {
+                    label: "Investimento",
+                    data: investimentos,
+                    backgroundColor: "#020074",
+                    borderRadius: 2
+                }
+            ]
+        },
 
-    const maiorValor =
-        Math.max(
-            ...investimentos
-        );
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
 
+            animation: {
+                duration: 500
+            },
 
-    let limiteMaximo;
+            layout: {
+                padding: obterPaddingGrafico(compacto)
+            },
 
-
-    if (maiorValor === 0) {
-
-        limiteMaximo = 5000;
-
-    } else {
-
-        limiteMaximo =
-            Math.ceil(
-                maiorValor /
-                1000
-            ) * 1000;
-
-    }
-
-
-    if (
-        limiteMaximo <
-        1000
-    ) {
-
-        limiteMaximo =
-            1000;
-
-    }
-
-
-    graficoInvestimento =
-        new Chart(
-            canvas,
-            {
-
-                type: "bar",
-
-
-                data: {
-
-                    labels: [
-
-                        "Jan",
-
-                        "Fev",
-
-                        "Mar",
-
-                        "Abr",
-
-                        "Mai",
-
-                        "Jun",
-
-                        "Jul",
-
-                        "Ago",
-
-                        "Set",
-
-                        "Out",
-
-                        "Nov",
-
-                        "Dez"
-
-                    ],
-
-
-                    datasets: [
-
-                        {
-
-                            label:
-                                "Investimento",
-
-                            data:
-                                investimentos,
-
-                            backgroundColor:
-                                "#020074",
-
-                            borderRadius:
-                                2
-
-                        }
-
-                    ]
-
+            plugins: {
+                datalabels: {
+                    display: false
                 },
 
+                legend: {
+                    display: false
+                },
 
-                options: {
-
-                    responsive:
-                        true,
-
-                    maintainAspectRatio:
-                        false,
-
-
-                    animation: {
-
-                        duration:
-                            500
-
-                    },
-
-
-                    plugins: {
-
-                        datalabels: {
-
-                            display:
-                                false
-
-                        },
-
-
-                        legend: {
-
-                            display:
-                                false
-
-                        },
-
-
-                        tooltip: {
-
-                            callbacks: {
-
-                                label:
-                                    function (
-                                        context
-                                    ) {
-
-                                        const valor =
-                                            Number(
-                                                context.raw
-                                            );
-
-
-                                        return (
-                                            "Investimento: " +
-                                            valor
-                                                .toLocaleString(
-                                                    "pt-BR",
-                                                    {
-                                                        style:
-                                                            "currency",
-
-                                                        currency:
-                                                            "BRL"
-                                                    }
-                                                )
-                                        );
-
-                                    }
-
-                            }
-
+                tooltip: {
+                    callbacks: {
+                        label(context) {
+                            return (
+                                "Investimento: " +
+                                formatarMoeda(context.raw)
+                            );
                         }
-
-                    },
-
-
-                    scales: {
-
-                        x: {
-
-                            grid: {
-
-                                display:
-                                    false
-
-                            },
-
-
-                            ticks: {
-
-                                color:
-                                    "#ffffff",
-
-                                font: {
-
-                                    size:
-                                        10
-
-                                }
-
-                            }
-
-                        },
-
-
-                        y: {
-
-                            beginAtZero:
-                                true,
-
-                            max:
-                                limiteMaximo,
-
-
-                            grid: {
-
-                                color:
-                                    "rgba(255,255,255,0.08)"
-
-                            },
-
-
-                            ticks: {
-
-                                color:
-                                    "#ffffff",
-
-                                stepSize:
-                                    limiteMaximo /
-                                    5,
-
-                                font: {
-
-                                    size:
-                                        9
-
-                                },
-
-
-                                callback:
-                                    function (
-                                        valor
-                                    ) {
-
-                                        return valor
-                                            .toLocaleString(
-                                                "pt-BR",
-                                                {
-                                                    style:
-                                                        "currency",
-
-                                                    currency:
-                                                        "BRL",
-
-                                                    maximumFractionDigits:
-                                                        0
-                                                }
-                                            );
-
-                                    }
-
-                            }
-
-                        }
-
                     }
-
                 }
+            },
 
-            }
-        );
+            scales: obterEixosGrafico(
+                limiteMaximo,
+                compacto
+            )
+        }
+    });
+}
 
+
+// =====================================================
+// RESIZE
+// =====================================================
+
+window.addEventListener("resize", () => {
+    clearTimeout(timerResize);
+
+    timerResize = setTimeout(() => {
+        if (!transacoesCarregadas) {
+            carregarDashboard();
+            return;
+        }
+
+        carregarGraficoMensal(transacoesCache);
+        carregarGraficoSaida(transacoesCache);
+        carregarGraficoInvestimento(transacoesCache);
+    }, 250);
+});
+
+
+// =====================================================
+// MENU DE NAVEGAÇÃO
+// =====================================================
+
+function configurarMenu() {
+    if (!elementos.botaoMenu || !elementos.menuPaginas) {
+        return;
+    }
+
+    elementos.botaoMenu.addEventListener("click", (event) => {
+        event.stopPropagation();
+        elementos.menuPaginas.classList.toggle("ativo");
+    });
+
+    elementos.menuPaginas.addEventListener("click", (event) => {
+        event.stopPropagation();
+    });
+
+    document.addEventListener("click", () => {
+        elementos.menuPaginas.classList.remove("ativo");
+    });
 }

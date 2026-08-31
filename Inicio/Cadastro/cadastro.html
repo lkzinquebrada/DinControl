@@ -11,6 +11,7 @@
 </head>
 
 <body>
+
     <div class="conteudo-cadastro">
 
         <img
@@ -18,73 +19,98 @@
             alt="DinControl"
             class="logo-dincontrol"
         >
-    <div class="cadastro">
 
-        <h1 class="titulo">
-            Crie sua conta
-        </h1>
+        <div class="cadastro">
 
-        <p class="SubTitulo">
-            Comece a controlar suas finanças
-        </p>
+            <h1 class="titulo">
+                Crie sua conta
+            </h1>
 
-        <form id="formCadastro">
-
-            <label for="nome">Nome completo</label>
-
-            <input
-                type="text"
-                id="nome"
-                placeholder="Digite seu nome"
-                required
-            >
-
-            <label for="email">Email</label>
-
-            <input
-                type="email"
-                id="email"
-                placeholder="Digite seu email"
-                required
-            >
-
-            <label for="senha">Senha</label>
-
-            <div class="CampoSenha">
-                <input
-                    type="password"
-                    id="senha"
-                    placeholder="Digite sua senha"
-                    required
-                >
-                <button type="button" 
-                id="toggleSenha"
-                class="botao-olho"
-                >
-                    <img src="Assets/olho.png" alt="Mostrar senha">
-                    </button>
-            </div>
-
-            <button type="submit">
-                Criar conta
-            </button>
-
-            <p class="login-link">
-                Já possui uma conta? <a href="/login/login.html">Faça login</a>
+            <p class="SubTitulo">
+                Comece a controlar suas finanças
             </p>
 
-        </form>
+            <form id="formCadastro">
 
-        <p id="mensagem"></p>
+                <label for="nome">
+                    Nome completo
+                </label>
 
-        <script src="cadastro.js"></script>
+                <input
+                    type="text"
+                    id="nome"
+                    placeholder="Digite seu nome"
+                    required
+                >
+
+                <label for="email">
+                    Email
+                </label>
+
+                <input
+                    type="email"
+                    id="email"
+                    placeholder="Digite seu email"
+                    required
+                >
+
+                <label for="senha">
+                    Senha
+                </label>
+
+                <div class="CampoSenha">
+
+                    <input
+                        type="password"
+                        id="senha"
+                        placeholder="Digite sua senha"
+                        required
+                        minlength="5"
+                        maxlength="10"
+                        inputmode="numeric"
+                        pattern="[0-9]+"
+                    >
+
+                    <button
+                        type="button"
+                        id="toggleSenha"
+                        class="botao-olho"
+                    >
+                        <img
+                            src="Assets/olho.png"
+                            alt="Mostrar senha"
+                        >
+                    </button>
+
+                </div>
+
+                <button type="submit">
+                    Criar conta
+                </button>
+
+                <p class="login-link">
+                    Já possui uma conta?
+                    <a href="/login/login.html">
+                        Faça login
+                    </a>
+                </p>
+
+            </form>
+
+            <p id="mensagem"></p>
+
+        </div>
+
     </div>
 
     <img
-    src="Assets/Coin.png"
-    alt="Coin1"
-    class="Coin"
->
+        src="Assets/Coin.png"
+        alt="Coin1"
+        class="Coin"
+    >
+
+    <script src="cadastro.js"></script>
 
 </body>
+
 </html>

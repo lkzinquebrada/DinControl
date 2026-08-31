@@ -1,116 +1,72 @@
-const campoSenha = document.querySelector("#senha");
-const botaoOlho = document.querySelector("#toggleSenha");
 const formulario = document.querySelector("#formLogin");
 
-formulario.addEventListener("submit", async (event) => {
+const campoEmail = document.querySelector("#email");
+const campoSenha = document.querySelector("#senha");
 
+const botaoOlho = document.querySelector(".botao-olho");
+const mensagem = document.querySelector("#mensagem");
+
+
+// =====================================================
+// LOGIN
+// =====================================================
+
+formulario.addEventListener("submit", async (event) => {
     event.preventDefault();
 
-    const email = document.querySelector("#email").value;
-    const senha = document.querySelector("#senha").value;
+    const email = campoEmail.value.trim();
+    const senha = campoSenha.value.trim();
 
     try {
-
         const resposta = await fetch("/login", {
-
             method: "POST",
+            credentials: "same-origin",
 
             headers: {
                 "Content-Type": "application/json"
             },
 
             body: JSON.stringify({
-                email: email,
-                senha: senha
+                email,
+                senha
             })
-
         });
-
 
         const resultado = await resposta.json();
 
-
-        console.log("Status:", resposta.status);
-        console.log("Resposta do servidor:", resultado);
-
-
         if (resposta.ok) {
-
-            console.log(
-                "LOGIN CORRETO - REDIRECIONANDO"
-            );
-
-
-            // =========================
-            // SALVA O USUÁRIO LOGADO
-            // =========================
-
-            localStorage.setItem(
-                "usuarioId",
-                resultado.usuario.id
-            );
-
-
-            localStorage.setItem(
-                "usuarioNome",
-                resultado.usuario.nome
-            );
-
-
-            localStorage.setItem(
-                "usuarioEmail",
-                resultado.usuario.email
-            );
-
-
-            // =========================
-            // REDIRECIONA
-            // =========================
+            // Remove dados antigos que eram usados
+            // como autenticação no localStorage.
+            localStorage.removeItem("usuarioId");
+            localStorage.removeItem("usuarioNome");
+            localStorage.removeItem("usuarioEmail");
 
             window.location.href =
                 "/Principal/principal.html";
 
-
-        } else {
-
-            console.log("LOGIN INCORRETO");
-
-            document.querySelector(
-                "#mensagem"
-            ).textContent =
-                resultado.erro;
-
+            return;
         }
 
+        mensagem.textContent =
+            resultado.erro ||
+            "E-mail ou senha incorretos.";
 
     } catch (error) {
-
         console.error(error);
 
-        document.querySelector(
-            "#mensagem"
-        ).textContent =
+        mensagem.textContent =
             "Erro ao conectar com o servidor.";
-
     }
-
 });
 
 
-// =========================
+// =====================================================
 // MOSTRAR / ESCONDER SENHA
-// =========================
+// =====================================================
 
 botaoOlho.addEventListener("click", () => {
-
-    if (campoSenha.type === "password") {
-
-        campoSenha.type = "text";
-
-    } else {
-
-        campoSenha.type = "password";
-
-    }
-
+    campoSenha.type =
+        campoSenha.type === "password"
+            ? "text"
+            : "password";
 });

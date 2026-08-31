@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Nova senha | DinControl</title>
+
+    <link
+        rel="stylesheet"
+        href="redefinirsenha.css"
+    >
+</head>
+
+<body>
+
+    <div class="conteudo-redefinirsenha">
+
+        <!-- LOGO -->
+        <img
+            src="Assets/Logo.png"
+            alt="DinControl"
+            class="logo-dincontrol"
+        >
+
+        <!-- CAIXA REDEFINIR -->
+        <div class="redefinirsenha">
+
+            <h1 class="titulo">
+                Redefina sua senha
+            </h1>
+
+            <p class="SubTitulo">
+                • A senha deve conter somente números <br>
+                • Deve conter no mínimo 5 números <br>
+                • Não use números repetidos
+            </p>
+
+            <form id="formRedefinirSenha">
+
+                <!-- NOVA SENHA -->
+                <label for="novaSenha">
+                    Insira sua nova senha
+                </label>
+
+                <div class="CampoSenha">
+
+                    <input
+                        type="password"
+                        id="novaSenha"
+                        inputmode="numeric"
+                        autocomplete="new-password"
+                    >
+
+                    <button
+                        type="button"
+                        class="botao-olho"
+                        id="olhoNovaSenha"
+                    >
+                        <img
+                            src="Assets/olho.png"
+                            alt="Mostrar senha"
+                        >
+                    </button>
+
+                </div>
+
+                <!-- CONFIRMAR SENHA -->
+                <label for="confirmarSenha">
+                    Confirme sua senha
+                </label>
+
+                <div class="CampoSenha">
+
+                    <input
+                        type="password"
+                        id="confirmarSenha"
+                        inputmode="numeric"
+                        autocomplete="new-password"
+                    >
+
+                    <button
+                        type="button"
+                        class="botao-olho"
+                        id="olhoConfirmarSenha"
+                    >
+                        <img
+                            src="Assets/olho.png"
+                            alt="Mostrar senha"
+                        >
+                    </button>
+
+                </div>
+
+                <button
+                    type="button"
+                    id="btnRedefinirSenha"
+                >
+                    Redefinir sua senha
+                </button>
+
+                <p id="mensagem"></p>
+
+            </form>
+
+        </div>
+
+        <!-- MASCOTE -->
+        <img
+            src="Assets/Coin.png"
+            alt="Coin"
+            class="Coin"
+        >
+
+    </div>
+
+    <script src="redefinirsenha.js"></script>
+
+</body>
+
+</html>
