@@ -1054,8 +1054,9 @@ body {
         --col1-left: 55px;
         --col2-left: 455px;
 
-        --row1-top: 205px;
-        --row2-top: 465px;
+        /* GRÁFICOS SUBIDOS 15PX */
+        --row1-top: 190px;
+        --row2-top: 450px;
 
         --card-width: 370px;
         --card-height: 235px;
@@ -1081,10 +1082,26 @@ body {
         --pizza-bottom: 7px;
         --pizza-height: 175px;
 
-        --coin-right: 12px;
+        /* COIN NO CANTO INFERIOR DIREITO */
+        --coin-right: 0;
         --coin-bottom: 0;
         --coin-width: 315px;
         --coin-max-height: 48vh;
+    }
+
+    .Coin {
+        position: fixed;
+        right: var(--coin-right);
+        bottom: var(--coin-bottom);
+
+        width: var(--coin-width);
+        height: auto;
+        max-height: var(--coin-max-height);
+
+        object-fit: contain;
+
+        z-index: 2;
+        pointer-events: none;
     }
 }
 
