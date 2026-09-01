@@ -865,7 +865,7 @@ function criarGraficoSaida(categorias) {
                         padding: compacto ? 5 : 11,
 
                         font: {
-                            size: compacto ? 9 : 16
+                            size: compacto ? 9 : 10
                         }
                     }
                 },
