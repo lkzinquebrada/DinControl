@@ -49,6 +49,30 @@ confirmarSenhaInput.addEventListener("input", () => {
 
 
 // =====================================================
+// SEQUÊNCIA NUMÉRICA ÓBVIA (EX: 1234, 4321)
+// =====================================================
+
+function possuiSequenciaNumerica(senha) {
+    const digitos = senha.split("").map(Number);
+
+    for (let i = 0; i <= digitos.length - 3; i++) {
+        const a = digitos[i];
+        const b = digitos[i + 1];
+        const c = digitos[i + 2];
+
+        const crescente = b === a + 1 && c === b + 1;
+        const decrescente = b === a - 1 && c === b - 1;
+
+        if (crescente || decrescente) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+
+// =====================================================
 // BOTÃO REDEFINIR SENHA
 // =====================================================
 
@@ -85,12 +109,9 @@ btnRedefinirSenha.addEventListener("click", async () => {
         return;
     }
 
-    const numeros = novaSenha.split("");
-    const numerosUnicos = new Set(numeros);
-
-    if (numerosUnicos.size !== numeros.length) {
+    if (possuiSequenciaNumerica(novaSenha)) {
         mostrarMensagem(
-            "A senha não pode conter números repetidos.",
+            "A senha não pode conter sequências numéricas óbvias (ex: 1234, 4321).",
             "erro"
         );
 

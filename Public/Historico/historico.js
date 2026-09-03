@@ -321,6 +321,9 @@ function selecionarMesAtual() {
 }
 
 function montarCategorias() {
+    const categoriaSelecionada =
+        filtroCategoria.value || "todos";
+
     const categorias = [
         ...new Set(
             transacoes
@@ -351,6 +354,10 @@ function montarCategorias() {
 
         filtroCategoria.appendChild(option);
     });
+
+    if (categorias.includes(categoriaSelecionada)) {
+        filtroCategoria.value = categoriaSelecionada;
+    }
 }
 
 function aplicarFiltros() {
@@ -569,7 +576,101 @@ function criarLinha(transacao) {
         </span>
     `;
 
+    linha.appendChild(
+        criarBotaoExcluir(transacao)
+    );
+
     return linha;
+}
+
+
+// =====================================================
+// EXCLUIR TRANSAÇÃO
+// =====================================================
+
+function criarBotaoExcluir(transacao) {
+    const botao =
+        document.createElement("button");
+
+    botao.type = "button";
+    botao.className = "botao-excluir-transacao";
+    botao.setAttribute(
+        "aria-label",
+        "Excluir transação"
+    );
+
+    botao.innerHTML = `
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M4 7h16" stroke-linecap="round" />
+            <path d="M9 7V4h6v3" stroke-linecap="round" stroke-linejoin="round" />
+            <path d="M6 7l1 13a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1l1-13" stroke-linecap="round" stroke-linejoin="round" />
+            <path d="M10 11v6M14 11v6" stroke-linecap="round" />
+        </svg>
+    `;
+
+    botao.addEventListener("click", (event) => {
+        event.stopPropagation();
+        excluirTransacao(transacao.id);
+    });
+
+    return botao;
+}
+
+async function excluirTransacao(id) {
+    const confirmado = confirm(
+        "Tem certeza que deseja excluir esta transação?"
+    );
+
+    if (!confirmado) {
+        return;
+    }
+
+    try {
+        const resposta = await fetch(
+            `/transactions/${id}`,
+            {
+                method: "DELETE",
+                credentials: "same-origin"
+            }
+        );
+
+        if (resposta.status === 401) {
+            window.location.href =
+                "/login/login.html";
+
+            return;
+        }
+
+        const resultado =
+            await resposta.json();
+
+        if (!resposta.ok) {
+            alert(
+                resultado.erro ||
+                "Erro ao excluir transação."
+            );
+
+            return;
+        }
+
+        transacoes = transacoes.filter(
+            (transacao) =>
+                transacao.id !== id
+        );
+
+        montarCategorias();
+        aplicarFiltros();
+
+    } catch (erro) {
+        console.error(
+            "Erro ao excluir transação:",
+            erro
+        );
+
+        alert(
+            "Erro ao conectar com o servidor."
+        );
+    }
 }
 
 

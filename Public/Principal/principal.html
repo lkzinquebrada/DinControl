@@ -120,8 +120,22 @@
                                 <option value=""></option>
                                 <option value="Salario">Salário</option>
                                 <option value="Outros">Outros</option>
+                                <option value="Personalizada">Categoria personalizada</option>
                             </select>
                         </div>
+
+                        <input
+                            type="text"
+                            id="categoriaEntradaPersonalizada"
+                            class="campo-categoria-personalizada"
+                            placeholder="Digite a categoria"
+                            maxlength="30"
+                            autocomplete="off"
+                            autocorrect="off"
+                            autocapitalize="off"
+                            spellcheck="false"
+                            hidden
+                        >
 
                         <!-- Saída -->
                         <div class="linha-transacao">
@@ -148,9 +162,23 @@
                                     <option value="Educacao">Educação</option>
                                     <option value="Investimento">Investimento</option>
                                     <option value="Outros">Outros</option>
+                                    <option value="Personalizada">Categoria personalizada</option>
                                 </select>
                             </div>
                         </div>
+
+                        <input
+                            type="text"
+                            id="categoriaSaidaPersonalizada"
+                            class="campo-categoria-personalizada"
+                            placeholder="Digite a categoria"
+                            maxlength="30"
+                            autocomplete="off"
+                            autocorrect="off"
+                            autocapitalize="off"
+                            spellcheck="false"
+                            hidden
+                        >
 
                         <button
                             id="confirmarTransacao"

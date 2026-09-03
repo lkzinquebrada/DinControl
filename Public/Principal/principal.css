@@ -578,6 +578,37 @@ body {
 }
 
 
+/* CATEGORIA PERSONALIZADA */
+
+.campo-categoria-personalizada {
+    width: 100%;
+
+    box-sizing: border-box;
+
+    margin-bottom: var(--linha-bottom);
+
+    padding: 0 var(--linha-pad);
+
+    height: var(--linha-height);
+    min-height: var(--linha-height);
+
+    border: none;
+    border-radius: 999px;
+
+    background-color: #e5e5e5;
+
+    color: #555555;
+
+    outline: none;
+
+    font-size: var(--input-font);
+}
+
+.campo-categoria-personalizada[hidden] {
+    display: none;
+}
+
+
 /* CONFIRMAR */
 
 .confirmar-transacao {

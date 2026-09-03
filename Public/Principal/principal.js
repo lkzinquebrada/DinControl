@@ -124,6 +124,8 @@ const elementos = {
     valorSaida: null,
     categoriaEntrada: null,
     categoriaSaida: null,
+    categoriaEntradaPersonalizada: null,
+    categoriaSaidaPersonalizada: null,
     confirmarTransacao: null,
     mensagemTransacao: null,
 
@@ -148,6 +150,8 @@ function mapearElementos() {
     elementos.valorSaida = document.querySelector("#valorSaida");
     elementos.categoriaEntrada = document.querySelector("#categoriaEntrada");
     elementos.categoriaSaida = document.querySelector("#categoriaSaida");
+    elementos.categoriaEntradaPersonalizada = document.querySelector("#categoriaEntradaPersonalizada");
+    elementos.categoriaSaidaPersonalizada = document.querySelector("#categoriaSaidaPersonalizada");
     elementos.confirmarTransacao = document.querySelector("#confirmarTransacao");
     elementos.mensagemTransacao = document.querySelector("#mensagemTransacao");
 
@@ -257,7 +261,39 @@ function configurarEventos() {
         confirmarCadastroTransacao
     );
 
+    elementos.categoriaEntrada?.addEventListener(
+        "change",
+        () => alternarCategoriaPersonalizada(
+            elementos.categoriaEntrada,
+            elementos.categoriaEntradaPersonalizada
+        )
+    );
+
+    elementos.categoriaSaida?.addEventListener(
+        "change",
+        () => alternarCategoriaPersonalizada(
+            elementos.categoriaSaida,
+            elementos.categoriaSaidaPersonalizada
+        )
+    );
+
     configurarMenu();
+}
+
+const CATEGORIA_PERSONALIZADA = "Personalizada";
+
+function alternarCategoriaPersonalizada(select, campoPersonalizado) {
+    if (!select || !campoPersonalizado) {
+        return;
+    }
+
+    const ativa = select.value === CATEGORIA_PERSONALIZADA;
+
+    campoPersonalizado.hidden = !ativa;
+
+    if (!ativa) {
+        campoPersonalizado.value = "";
+    }
 }
 
 
@@ -266,11 +302,28 @@ function configurarEventos() {
 // =====================================================
 
 function obterDadosFormularioTransacao() {
+    const categoriaEntradaSelecionada = elementos.categoriaEntrada?.value || "";
+    const categoriaSaidaSelecionada = elementos.categoriaSaida?.value || "";
+
     return {
         entrada: elementos.valorEntrada?.value.trim() || "",
         saida: elementos.valorSaida?.value.trim() || "",
-        categoriaEntrada: elementos.categoriaEntrada?.value || "",
-        categoriaSaida: elementos.categoriaSaida?.value || ""
+
+        categoriaEntrada:
+            categoriaEntradaSelecionada === CATEGORIA_PERSONALIZADA
+                ? elementos.categoriaEntradaPersonalizada?.value.trim() || ""
+                : categoriaEntradaSelecionada,
+
+        categoriaSaida:
+            categoriaSaidaSelecionada === CATEGORIA_PERSONALIZADA
+                ? elementos.categoriaSaidaPersonalizada?.value.trim() || ""
+                : categoriaSaidaSelecionada,
+
+        categoriaEntradaEhPersonalizada:
+            categoriaEntradaSelecionada === CATEGORIA_PERSONALIZADA,
+
+        categoriaSaidaEhPersonalizada:
+            categoriaSaidaSelecionada === CATEGORIA_PERSONALIZADA
     };
 }
 
@@ -279,7 +332,9 @@ function validarTransacao(dados) {
         entrada,
         saida,
         categoriaEntrada,
-        categoriaSaida
+        categoriaSaida,
+        categoriaEntradaEhPersonalizada,
+        categoriaSaidaEhPersonalizada
     } = dados;
 
     if (!entrada && !saida) {
@@ -299,11 +354,15 @@ function validarTransacao(dados) {
     }
 
     if (entrada && !categoriaEntrada) {
-        return "Selecione uma categoria para a entrada.";
+        return categoriaEntradaEhPersonalizada
+            ? "Digite o nome da categoria personalizada."
+            : "Selecione uma categoria para a entrada.";
     }
 
     if (saida && !categoriaSaida) {
-        return "Selecione uma categoria para a saída.";
+        return categoriaSaidaEhPersonalizada
+            ? "Digite o nome da categoria personalizada."
+            : "Selecione uma categoria para a saída.";
     }
 
     return null;
@@ -347,6 +406,16 @@ function limparFormularioTransacao() {
     elementos.valorSaida.value = "";
     elementos.categoriaEntrada.value = "";
     elementos.categoriaSaida.value = "";
+
+    alternarCategoriaPersonalizada(
+        elementos.categoriaEntrada,
+        elementos.categoriaEntradaPersonalizada
+    );
+
+    alternarCategoriaPersonalizada(
+        elementos.categoriaSaida,
+        elementos.categoriaSaidaPersonalizada
+    );
 }
 
 async function confirmarCadastroTransacao() {
@@ -508,15 +577,35 @@ function obterMovimentacaoMensal(transacoes) {
     return { entradas, saidas };
 }
 
+const CATEGORIAS_SAIDA_BASE = [
+    "Alimentacao",
+    "Locomocao",
+    "Investimento",
+    "Lazer",
+    "Educacao"
+];
+
+const ROTULOS_CATEGORIA_SAIDA = {
+    Alimentacao: "Alimentação",
+    Locomocao: "Locomoção",
+    Investimento: "Investimento",
+    Lazer: "Lazer",
+    Educacao: "Educação",
+    Outros: "Outros"
+};
+
+function formatarRotuloCategoriaSaida(categoria) {
+    return ROTULOS_CATEGORIA_SAIDA[categoria] || categoria;
+}
+
 function obterSaidasPorCategoria(transacoes) {
-    const categorias = {
-        Alimentacao: 0,
-        Locomocao: 0,
-        Investimento: 0,
-        Lazer: 0,
-        Educacao: 0,
-        Outros: 0
-    };
+    const totais = new Map();
+
+    CATEGORIAS_SAIDA_BASE.forEach(
+        (categoria) => totais.set(categoria, 0)
+    );
+
+    let outros = 0;
 
     transacoes.forEach((transacao) => {
         if (transacao.tipo !== "SAIDA") {
@@ -524,37 +613,42 @@ function obterSaidasPorCategoria(transacoes) {
         }
 
         const valor = Number(transacao.valor) || 0;
-        const categoria = normalizarTexto(
-            transacao.categoria || "Outros"
+        const categoriaOriginal = transacao.categoria || "Outros";
+        const categoriaNormalizada = normalizarTexto(categoriaOriginal);
+
+        const chaveBase = CATEGORIAS_SAIDA_BASE.find(
+            (categoria) =>
+                normalizarTexto(categoria) === categoriaNormalizada
         );
 
-        switch (categoria) {
-            case "alimentacao":
-                categorias.Alimentacao += valor;
-                break;
+        if (chaveBase) {
+            totais.set(chaveBase, totais.get(chaveBase) + valor);
+            return;
+        }
 
-            case "locomocao":
-                categorias.Locomocao += valor;
-                break;
+        if (categoriaNormalizada === "outros") {
+            outros += valor;
+            return;
+        }
 
-            case "investimento":
-                categorias.Investimento += valor;
-                break;
+        const chaveExistente = [...totais.keys()].find(
+            (chave) =>
+                normalizarTexto(chave) === categoriaNormalizada
+        );
 
-            case "lazer":
-                categorias.Lazer += valor;
-                break;
-
-            case "educacao":
-                categorias.Educacao += valor;
-                break;
-
-            default:
-                categorias.Outros += valor;
+        if (chaveExistente) {
+            totais.set(
+                chaveExistente,
+                totais.get(chaveExistente) + valor
+            );
+        } else {
+            totais.set(categoriaOriginal, valor);
         }
     });
 
-    return categorias;
+    totais.set("Outros", outros);
+
+    return totais;
 }
 
 function obterInvestimentosMensais(transacoes) {
@@ -753,6 +847,30 @@ function criarGraficoMensal(entradas, saidas) {
 // GRÁFICO DE SAÍDA
 // =====================================================
 
+const CORES_CATEGORIA_SAIDA_BASE = {
+    Alimentacao: "#e51b17",
+    Locomocao: "#e7b700",
+    Investimento: "#ef7d00",
+    Lazer: "#65b900",
+    Educacao: "#fd00a9",
+    Outros: "#633cff"
+};
+
+function obterCoresCategoriasSaida(chaves) {
+    let contadorPersonalizadas = 0;
+
+    return chaves.map((chave) => {
+        if (CORES_CATEGORIA_SAIDA_BASE[chave]) {
+            return CORES_CATEGORIA_SAIDA_BASE[chave];
+        }
+
+        const matiz = (200 + contadorPersonalizadas * 47) % 360;
+        contadorPersonalizadas += 1;
+
+        return `hsl(${matiz}, 70%, 50%)`;
+    });
+}
+
 function carregarGraficoSaida(transacoes) {
     const categorias = obterSaidasPorCategoria(transacoes);
     criarGraficoSaida(categorias);
@@ -769,40 +887,27 @@ function criarGraficoSaida(categorias) {
 
     const compacto = tela1024();
 
-    const valores = [
-        categorias.Alimentacao,
-        categorias.Locomocao,
-        categorias.Investimento,
-        categorias.Lazer,
-        categorias.Educacao,
-        categorias.Outros
-    ];
+    const chaves = [];
+    const rotulos = [];
+    const valores = [];
+
+    categorias.forEach((valor, chave) => {
+        chaves.push(chave);
+        rotulos.push(formatarRotuloCategoriaSaida(chave));
+        valores.push(valor);
+    });
 
     graficoSaida = new Chart(canvas, {
         type: "pie",
 
         data: {
-            labels: [
-                "Alimentação",
-                "Locomoção",
-                "Investimento",
-                "Lazer",
-                "Educação",
-                "Outros"
-            ],
+            labels: rotulos,
 
             datasets: [
                 {
                     data: valores,
 
-                    backgroundColor: [
-                        "#e51b17",
-                        "#e7b700",
-                        "#ef7d00",
-                        "#65b900",
-                        "#fd00a9",
-                        "#633cff"
-                    ],
+                    backgroundColor: obterCoresCategoriasSaida(chaves),
 
                     borderWidth: 0
                 }

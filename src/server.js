@@ -75,6 +75,36 @@ async function validarEmail(email) {
 }
 
 
+function possuiSequenciaNumerica(senha) {
+    const digitos =
+        senha.split("").map(Number);
+
+    for (
+        let i = 0;
+        i <= digitos.length - 3;
+        i++
+    ) {
+        const a = digitos[i];
+        const b = digitos[i + 1];
+        const c = digitos[i + 2];
+
+        const crescente =
+            b === a + 1 &&
+            c === b + 1;
+
+        const decrescente =
+            b === a - 1 &&
+            c === b - 1;
+
+        if (crescente || decrescente) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+
 function obterJwtSecret() {
     if (!process.env.JWT_SECRET) {
         throw new Error(
@@ -197,19 +227,10 @@ app.post("/users", async (req, res) => {
             });
         }
 
-        const numeros =
-            senha.split("");
-
-        const numerosUnicos =
-            new Set(numeros);
-
-        if (
-            numerosUnicos.size !==
-            numeros.length
-        ) {
+        if (possuiSequenciaNumerica(senha)) {
             return res.status(400).json({
                 erro:
-                    "A senha não pode conter números repetidos."
+                    "A senha não pode conter sequências numéricas óbvias (ex: 1234, 4321)."
             });
         }
 
@@ -1378,19 +1399,10 @@ app.post(
                 });
             }
 
-            const numeros =
-                novaSenha.split("");
-
-            const numerosUnicos =
-                new Set(numeros);
-
-            if (
-                numerosUnicos.size !==
-                numeros.length
-            ) {
+            if (possuiSequenciaNumerica(novaSenha)) {
                 return res.status(400).json({
                     erro:
-                        "A senha não pode conter números repetidos."
+                        "A senha não pode conter sequências numéricas óbvias (ex: 1234, 4321)."
                 });
             }
 
