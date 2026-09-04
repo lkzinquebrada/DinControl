@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import styles from './RedefinirPage.module.css'
+import { AuthLogo } from '../../components/layout/AuthLogo'
+import { AuthCoin } from '../../components/layout/AuthCoin'
 import { enviarCodigoRecuperacao, verificarCodigoRecuperacao } from '../../api/auth'
 import { ApiError } from '../../api/client'
 
@@ -101,11 +103,7 @@ export function RedefinirPage() {
 
   return (
     <div className={styles['conteudo-redefinir']}>
-      <img
-        src="/assets/Logo.png"
-        alt="DinControl"
-        className={styles['logo-dincontrol']}
-      />
+      <AuthLogo />
 
       <div className={styles.redefinir}>
         <h1 className={styles.titulo}>Redefina sua senha</h1>
@@ -168,7 +166,7 @@ export function RedefinirPage() {
         </form>
       </div>
 
-      <img src="/assets/Coin.png" alt="Coin" className={styles.Coin} />
+      <AuthCoin />
     </div>
   )
 }

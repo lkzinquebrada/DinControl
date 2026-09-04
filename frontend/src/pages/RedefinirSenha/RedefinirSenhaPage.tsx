@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import styles from './RedefinirSenhaPage.module.css'
+import { AuthLogo } from '../../components/layout/AuthLogo'
+import { AuthCoin } from '../../components/layout/AuthCoin'
 import { redefinirSenha } from '../../api/auth'
 import { ApiError } from '../../api/client'
 import { validarSenha } from '../../utils/password'
@@ -96,11 +98,7 @@ export function RedefinirSenhaPage() {
 
   return (
     <div className={styles['conteudo-redefinirsenha']}>
-      <img
-        src="/assets/Logo.png"
-        alt="DinControl"
-        className={styles['logo-dincontrol']}
-      />
+      <AuthLogo />
 
       <div className={styles.redefinirsenha}>
         <h1 className={styles.titulo}>Redefina sua senha</h1>
@@ -174,7 +172,7 @@ export function RedefinirSenhaPage() {
         </form>
       </div>
 
-      <img src="/assets/Coin.png" alt="Coin" className={styles.Coin} />
+      <AuthCoin />
     </div>
   )
 }

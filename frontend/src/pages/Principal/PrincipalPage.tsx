@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useState } from 'react'
 import styles from './PrincipalPage.module.css'
 import { LoadingScreen } from '../../components/layout/LoadingScreen'
+import { AppLogo } from '../../components/layout/AppLogo'
+import { AppCoin } from '../../components/layout/AppCoin'
 import { NavMenu } from '../../components/layout/NavMenu'
 import { ProfileButton } from '../../components/layout/ProfileButton'
 import { TransactionForm } from '../../components/transactions/TransactionForm'
@@ -43,7 +45,7 @@ export function PrincipalPage() {
 
       <div className={styles['conteudo-principal']}>
         <header className={styles['topo-dashboard']}>
-          <img src="/assets/Logo.png" alt="DinControl" className={styles['logo-dincontrol']} />
+          <AppLogo />
 
           <div className={styles['acoes-topo']}>
             <NavMenu styles={styles} paginaAtiva="principal" />
@@ -120,7 +122,7 @@ export function PrincipalPage() {
           </section>
         </main>
 
-        <img src="/assets/Coin.png" alt="Mascote DinControl" className={styles.Coin} />
+        <AppCoin />
       </div>
     </>
   )

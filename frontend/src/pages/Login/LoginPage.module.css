@@ -34,19 +34,9 @@
 
 
 /* =====================================================
-   LOGO
+   LOGO + MASCOTE
+   (shared: components/layout/AuthBrand.module.css)
 ===================================================== */
-
-.logo-dincontrol {
-    width: clamp(285px, 39vw, 750px);
-    height: auto;
-
-    display: block;
-
-    margin-bottom: clamp(-18px, -0.8vw, 4px);
-
-    flex-shrink: 0;
-}
 
 
 /* =====================================================
@@ -376,30 +366,6 @@
 
 
 /* =====================================================
-   MASCOTE
-===================================================== */
-
-.Coin {
-    position: fixed;
-
-    right: clamp(-6px, 1vw, 30px);
-    bottom: 0;
-
-    width: clamp(145px, 25vw, 600px);
-    height: auto;
-
-    max-width: 42vw;
-    max-height: 65vh;
-
-    object-fit: contain;
-
-    z-index: 2;
-
-    pointer-events: none;
-}
-
-
-/* =====================================================
    TABLET
    601px até 900px
 ===================================================== */
@@ -410,12 +376,6 @@
         padding-top: clamp(20px, 4vh, 40px);
     }
 
-
-    .logo-dincontrol {
-        width: clamp(300px, 64vw, 520px);
-
-        margin-bottom: clamp(-8px, 0.5vh, 10px);
-    }
 
 
     .login {
@@ -435,16 +395,6 @@
     }
 
 
-    .Coin {
-        width: clamp(160px, 27vw, 285px);
-
-        max-width: 35vw;
-        max-height: 38vh;
-
-        right: clamp(-5px, 0.6vw, 8px);
-
-        bottom: 0;
-    }
 }
 
 
@@ -461,12 +411,6 @@
             15px;
     }
 
-
-    .logo-dincontrol {
-        width: min(330px, 88vw);
-
-        margin-bottom: 5px;
-    }
 
 
     .login {
@@ -527,16 +471,6 @@
     }
 
 
-    .Coin {
-        width: clamp(135px, 40vw, 180px);
-
-        max-width: 42vw;
-        max-height: 28vh;
-
-        right: -5px;
-
-        bottom: 0;
-    }
 }
 
 
@@ -553,12 +487,6 @@
             15px;
     }
 
-
-    .logo-dincontrol {
-        width: min(330px, 88vw);
-
-        margin-bottom: 5px;
-    }
 
 
     .login {
@@ -619,16 +547,6 @@
     }
 
 
-    .Coin {
-        width: clamp(135px, 40vw, 180px);
-
-        max-width: 42vw;
-        max-height: 28vh;
-
-        right: -5px;
-
-        bottom: 0;
-    }
 }
 
 
@@ -643,12 +561,6 @@
         padding-top: 5px;
     }
 
-
-    .logo-dincontrol {
-        width: clamp(360px, 40vw, 590px);
-
-        margin-bottom: -16px;
-    }
 
 
     .login {
@@ -727,15 +639,6 @@
     }
 
 
-    .Coin {
-        width: clamp(180px, 27vw, 370px);
-
-        max-height: 48vh;
-
-        right: 5px;
-
-        bottom: 0;
-    }
 }
 
 
@@ -749,12 +652,6 @@
         padding-top: 5px;
     }
 
-
-    .logo-dincontrol {
-        width: min(285px, 82vw);
-
-        margin-bottom: -2px;
-    }
 
 
     .login {
@@ -829,15 +726,6 @@
     }
 
 
-    .Coin {
-        width: clamp(130px, 38vw, 150px);
-
-        max-height: 25vh;
-
-        right: -5px;
-
-        bottom: 0;
-    }
 }
 
 
@@ -863,12 +751,6 @@
     }
 
 
-    .logo-dincontrol {
-        width: 500px;
-
-        margin-bottom: 15px;
-    }
-
 
     .login {
         width: 420px;
@@ -887,18 +769,4 @@
     }
 
 
-    .Coin {
-        position: absolute;
-
-        width: 270px;
-
-        right: 60px;
-
-        top: 610px;
-
-        bottom: auto;
-
-        max-width: none;
-        max-height: none;
-    }
 }
