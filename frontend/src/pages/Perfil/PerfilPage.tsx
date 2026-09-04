@@ -3,6 +3,8 @@ import type { FormEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import styles from './PerfilPage.module.css'
 import { LoadingScreen } from '../../components/layout/LoadingScreen'
+import { AppLogo } from '../../components/layout/AppLogo'
+import { AppCoin } from '../../components/layout/AppCoin'
 import { useAuth } from '../../context/AuthContext'
 import { useFotoPerfil } from '../../utils/useFotoPerfil'
 import { atualizarUsuario } from '../../api/auth'
@@ -129,7 +131,7 @@ export function PerfilPage() {
       <LoadingScreen />
 
       <div className={styles['pagina-perfil']}>
-        <img src="/assets/Logo.png" alt="DinControl" className={styles['logo-dincontrol']} />
+        <AppLogo />
 
         <button
           type="button"
@@ -218,7 +220,7 @@ export function PerfilPage() {
           </button>
         </main>
 
-        <img src="/assets/Coin.png" alt="Mascote DinControl" className={styles.Coin} />
+        <AppCoin />
       </div>
     </>
   )

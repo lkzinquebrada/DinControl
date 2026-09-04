@@ -51,22 +51,6 @@
    LOGO
 ========================================================= */
 
-.logo-dincontrol {
-    position: absolute;
-
-    top: var(--logo-top);
-    left: var(--logo-left);
-
-    width: var(--logo-width);
-    height: auto;
-
-    display: block;
-
-    transform: none;
-
-    z-index: 20;
-}
-
 
 /* =========================================================
    PERFIL
@@ -395,6 +379,7 @@
     width: var(--input-width);
 
     min-width: 0;
+    flex-shrink: 1;
 
     padding: 0;
 
@@ -425,6 +410,7 @@
 .linha-transacao select {
     width: var(--select-width);
     max-width: var(--select-width);
+    flex-shrink: 0;
 
     margin-left: auto;
 
@@ -751,27 +737,6 @@
    COIN
 ========================================================= */
 
-.Coin {
-    position: absolute;
-
-    right: var(--coin-right);
-    bottom: var(--coin-bottom);
-
-    width: var(--coin-width);
-    height: auto;
-
-    max-width: none;
-    max-height: var(--coin-max-height);
-
-    object-fit: contain;
-
-    opacity: 1;
-
-    pointer-events: none;
-
-    z-index: 2;
-}
-
 
 /* =========================================================
    1024 x 600
@@ -781,9 +746,6 @@
        and (max-width: 1149px) {
 
     :root {
-        --logo-top: -30px;
-        --logo-left: -30px;
-        --logo-width: 500px;
 
         --perfil-top: 20px;
         --perfil-right: 18px;
@@ -808,7 +770,7 @@
 
         --painel-top: 50px;
         --painel-right: 169px;
-        --painel-width: 190px;
+        --painel-width: 212px;
         --painel-pad-y: 10px;
         --painel-pad-x: 12px;
         --painel-radius: 11px;
@@ -830,10 +792,10 @@
 
         --cifrao-font: 10px;
 
-        --input-width: 42px;
+        --input-width: 34px;
         --input-font: 10px;
 
-        --select-width: 45px;
+        --select-width: 122px;
         --select-font: 8px;
 
         --confirm-width: 82px;
@@ -872,10 +834,6 @@
         --pizza-bottom: 8px;
         --pizza-height: 142px;
 
-        --coin-right: 10px;
-        --coin-bottom: 0;
-        --coin-width: 260px;
-        --coin-max-height: 48vh;
     }
 }
 
@@ -888,9 +846,6 @@
        and (max-width: 1449px) {
 
     :root {
-        --logo-top: -35px;
-        --logo-left: -35px;
-        --logo-width: 560px;
 
         --perfil-top: 26px;
         --perfil-right: 28px;
@@ -915,7 +870,7 @@
 
         --painel-top: 58px;
         --painel-right: 203px;
-        --painel-width: 225px;
+        --painel-width: 248px;
         --painel-pad-y: 12px;
         --painel-pad-x: 14px;
         --painel-radius: 12px;
@@ -936,10 +891,10 @@
         --bolinha-size: 16px;
         --cifrao-font: 12px;
 
-        --input-width: 52px;
+        --input-width: 42px;
         --input-font: 12px;
 
-        --select-width: 55px;
+        --select-width: 132px;
         --select-font: 9px;
 
         --confirm-width: 94px;
@@ -980,26 +935,8 @@
         --pizza-height: 175px;
 
         /* COIN NO CANTO INFERIOR DIREITO */
-        --coin-right: 0;
-        --coin-bottom: 0;
-        --coin-width: 315px;
-        --coin-max-height: 48vh;
     }
 
-    .Coin {
-        position: fixed;
-        right: var(--coin-right);
-        bottom: var(--coin-bottom);
-
-        width: var(--coin-width);
-        height: auto;
-        max-height: var(--coin-max-height);
-
-        object-fit: contain;
-
-        z-index: 2;
-        pointer-events: none;
-    }
 }
 
 
@@ -1011,9 +948,6 @@
        and (max-width: 1699px) {
 
     :root {
-        --logo-top: -45px;
-        --logo-left: -45px;
-        --logo-width: 620px;
 
         --perfil-top: 35px;
         --perfil-right: 40px;
@@ -1038,7 +972,7 @@
 
         --painel-top: 70px;
         --painel-right: 234px;
-        --painel-width: 270px;
+        --painel-width: 292px;
         --painel-pad-y: 14px;
         --painel-pad-x: 16px;
         --painel-radius: 14px;
@@ -1059,10 +993,10 @@
         --bolinha-size: 18px;
         --cifrao-font: 14px;
 
-        --input-width: 62px;
+        --input-width: 50px;
         --input-font: 14px;
 
-        --select-width: 65px;
+        --select-width: 144px;
         --select-font: 10px;
 
         --confirm-width: 106px;
@@ -1101,10 +1035,6 @@
         --pizza-bottom: 6px;
         --pizza-height: 195px;
 
-        --coin-right: 18px;
-        --coin-bottom: 0;
-        --coin-width: 390px;
-        --coin-max-height: 51vh;
     }
 }
 
@@ -1119,9 +1049,6 @@
 @media screen and (min-width: 1700px) {
 
     :root {
-        --logo-top: -25px;
-        --logo-left: -60px;
-        --logo-width: 700px;
 
         --perfil-top: 45px;
         --perfil-right: 60px;
@@ -1155,7 +1082,7 @@
         */
         --painel-top: 88px;
         --painel-right: 268px;
-        --painel-width: 310px;
+        --painel-width: 335px;
         --painel-pad-y: 16px;
         --painel-pad-x: 18px;
         --painel-radius: 15px;
@@ -1176,10 +1103,10 @@
         --bolinha-size: 21px;
         --cifrao-font: 16px;
 
-        --input-width: 75px;
+        --input-width: 60px;
         --input-font: 16px;
 
-        --select-width: 78px;
+        --select-width: 167px;
         --select-font: 12px;
 
         --confirm-width: 118px;
@@ -1222,10 +1149,6 @@
         --pizza-bottom: 6px;
         --pizza-height: 220px;
 
-        --coin-right: 30px;
-        --coin-bottom: 20px;
-        --coin-width: 500px;
-        --coin-max-height: none;
     }
 }
 
@@ -1272,20 +1195,6 @@
 
 
     /* LOGO */
-
-    .logo-dincontrol {
-        position: absolute !important;
-
-        top: 15px !important;
-        left: 50% !important;
-
-        width: min(340px, 85vw) !important;
-        height: auto !important;
-
-        transform: translateX(-50%) !important;
-
-        z-index: 20 !important;
-    }
 
 
     /* PERFIL CENTRALIZADO */
@@ -1649,22 +1558,6 @@
 
     /* COIN NO FINAL DA PÁGINA */
 
-    .Coin {
-        position: absolute !important;
-
-        right: 5px !important;
-        bottom: 10px !important;
-
-        width: 175px !important;
-        height: auto !important;
-
-        max-width: none !important;
-        max-height: none !important;
-
-        opacity: 1 !important;
-
-        z-index: 3 !important;
-    }
 }
 
 
@@ -1701,19 +1594,6 @@
     /* =================================================
        LOGO
     ================================================= */
-
-    .logo-dincontrol {
-        position: absolute !important;
-
-        top: 12px !important;
-        left: 50% !important;
-
-        width: min(310px, 84vw) !important;
-
-        transform: translateX(-50%) !important;
-
-        z-index: 20 !important;
-    }
 
 
     /* =================================================
@@ -2235,18 +2115,6 @@
        COIN
     ================================================= */
 
-    .Coin {
-        position: absolute !important;
-
-        right: 0 !important;
-        bottom: 5px !important;
-
-        width: 150px !important;
-
-        max-height: none !important;
-
-        z-index: 3 !important;
-    }
 }
 
 /* =========================================================
@@ -2448,7 +2316,7 @@
     ================================================= */
 
     .linha-transacao input {
-        width: 75px !important;
+        width: 62px !important;
 
         min-width: 0 !important;
 
@@ -2481,8 +2349,8 @@
     }
 
     .linha-transacao select {
-        width: 72px !important;
-        max-width: 72px !important;
+        width: 158px !important;
+        max-width: 158px !important;
 
         margin-left: auto !important;
 
@@ -2501,6 +2369,22 @@
         font-size: 11px !important;
 
         cursor: pointer !important;
+    }
+
+
+    /* =================================================
+       CATEGORIA PERSONALIZADA
+    ================================================= */
+
+    .campo-categoria-personalizada {
+        height: 45px !important;
+        min-height: 45px !important;
+
+        margin-bottom: 10px !important;
+
+        padding: 0 11px !important;
+
+        font-size: 14px !important;
     }
 
 
@@ -2704,7 +2588,7 @@
 
 
     .linha-transacao input {
-        width: 65px !important;
+        width: 52px !important;
 
         min-width: 0 !important;
 
@@ -2715,12 +2599,24 @@
 
 
     .linha-transacao select {
-        width: 62px !important;
-        max-width: 62px !important;
+        width: 145px !important;
+        max-width: 145px !important;
 
         margin-left: auto !important;
 
         font-size: 10px !important;
+    }
+
+
+    .campo-categoria-personalizada {
+        height: 42px !important;
+        min-height: 42px !important;
+
+        margin-bottom: 9px !important;
+
+        padding: 0 9px !important;
+
+        font-size: 13px !important;
     }
 
 
@@ -2812,20 +2708,6 @@
     /* =================================================
        LOGO
     ================================================= */
-
-    .logo-dincontrol {
-        position: absolute;
-
-        top: 20px;
-        left: 50%;
-
-        width: min(440px, 72vw);
-        height: auto;
-
-        transform: translateX(-50%);
-
-        z-index: 20;
-    }
 
 
     /* =================================================
@@ -3143,7 +3025,7 @@
 
 
     .linha-transacao input {
-        width: 75px;
+        width: 62px;
 
         min-width: 0;
 
@@ -3168,8 +3050,8 @@
 
 
     .linha-transacao select {
-        width: 75px;
-        max-width: 75px;
+        width: 158px;
+        max-width: 158px;
 
         margin-left: auto;
 
@@ -3180,6 +3062,18 @@
         outline: none;
 
         font-size: 11px;
+    }
+
+
+    .campo-categoria-personalizada {
+        height: 46px;
+        min-height: 46px;
+
+        margin-bottom: 10px;
+
+        padding: 0 11px;
+
+        font-size: 14px;
     }
 
 
@@ -3372,26 +3266,6 @@
        COIN
     ================================================= */
 
-    .Coin {
-        position: absolute;
-
-        right: 10px;
-        bottom: 5px;
-
-        width: 250px;
-        height: auto;
-
-        max-width: none;
-        max-height: none;
-
-        object-fit: contain;
-
-        opacity: 1;
-
-        pointer-events: none;
-
-        z-index: 2;
-    }
 }
 
 /* =========================================================
@@ -3449,22 +3323,6 @@
     /* =================================================
        LOGO
     ================================================= */
-
-    .logo-dincontrol {
-        position: absolute !important;
-
-        top: -15px !important;
-        left: -25px !important;
-
-        width: 560px !important;
-        height: auto !important;
-
-        margin: 0 !important;
-
-        transform: none !important;
-
-        z-index: 20 !important;
-    }
 
 
     /* =================================================
@@ -3741,19 +3599,31 @@
 
 
     .linha-transacao input {
-        width: 65px !important;
+        width: 50px !important;
 
         font-size: 13px !important;
     }
 
 
     .linha-transacao select {
-        width: 68px !important;
-        max-width: 68px !important;
+        width: 145px !important;
+        max-width: 145px !important;
 
         margin-left: auto !important;
 
         font-size: 10px !important;
+    }
+
+
+    .campo-categoria-personalizada {
+        height: 42px !important;
+        min-height: 42px !important;
+
+        margin-bottom: 9px !important;
+
+        padding: 0 9px !important;
+
+        font-size: 13px !important;
     }
 
 
@@ -3966,26 +3836,6 @@
        COIN
     ================================================= */
 
-    .Coin {
-        position: absolute !important;
-
-        right: 15px !important;
-        bottom: 10px !important;
-
-        width: 320px !important;
-        height: auto !important;
-
-        max-width: none !important;
-        max-height: none !important;
-
-        object-fit: contain !important;
-
-        opacity: 1 !important;
-
-        z-index: 2 !important;
-
-        pointer-events: none !important;
-    }
 }
 
 /* =====================================================

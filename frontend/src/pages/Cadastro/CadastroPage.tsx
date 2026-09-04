@@ -2,6 +2,8 @@ import { useState } from 'react'
 import type { FormEvent } from 'react'
 import { Link } from 'react-router-dom'
 import styles from './CadastroPage.module.css'
+import { AuthLogo } from '../../components/layout/AuthLogo'
+import { AuthCoin } from '../../components/layout/AuthCoin'
 import { cadastrarUsuario } from '../../api/auth'
 import { ApiError } from '../../api/client'
 import { validarSenha } from '../../utils/password'
@@ -53,11 +55,7 @@ export function CadastroPage() {
 
   return (
     <div className={styles['conteudo-cadastro']}>
-      <img
-        src="/assets/Logo.png"
-        alt="DinControl"
-        className={styles['logo-dincontrol']}
-      />
+      <AuthLogo />
 
       <div className={styles.cadastro}>
         <h1 className={styles.titulo}>Crie sua conta</h1>
@@ -130,7 +128,7 @@ export function CadastroPage() {
         </p>
       </div>
 
-      <img src="/assets/Coin.png" alt="Coin1" className={styles.Coin} />
+      <AuthCoin />
     </div>
   )
 }

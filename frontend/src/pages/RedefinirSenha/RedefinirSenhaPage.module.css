@@ -41,19 +41,6 @@
    LOGO
 ===================================================== */
 
-.logo-dincontrol {
-    width: 750px;
-    height: auto;
-
-    display: block;
-
-    margin-bottom: -15px;
-
-    position: relative;
-
-    z-index: 10;
-}
-
 
 /* =====================================================
    CARD
@@ -322,24 +309,6 @@
    COIN
 ===================================================== */
 
-.Coin {
-    position: fixed;
-
-    right: 30px;
-    bottom: 10px;
-
-    width: 600px;
-    height: auto;
-
-    max-height: 70vh;
-
-    object-fit: contain;
-
-    pointer-events: none;
-
-    z-index: 2;
-}
-
 
 /* =========================================================
    1600 x 900
@@ -353,12 +322,6 @@ and (max-width: 1699px) {
         padding-top: 12px;
     }
 
-
-    .logo-dincontrol {
-        width: 650px;
-
-        margin-bottom: -12px;
-    }
 
 
     .redefinirsenha {
@@ -397,13 +360,6 @@ and (max-width: 1699px) {
     }
 
 
-    .Coin {
-        width: 480px;
-
-        right: 15px;
-        bottom: 5px;
-    }
-
 }
 
 
@@ -425,12 +381,6 @@ and (max-height: 899px) {
 
 
     /* LOGO */
-
-    .logo-dincontrol {
-        width: 540px;
-
-        margin-bottom: -10px;
-    }
 
 
     /* CARD */
@@ -536,15 +486,6 @@ and (max-height: 899px) {
 
     /* COIN */
 
-    .Coin {
-        width: 330px;
-
-        right: 8px;
-        bottom: 3px;
-
-        max-height: 48vh;
-    }
-
 }
 
 
@@ -565,12 +506,6 @@ and (max-height: 899px) {
         padding-bottom: 30px;
     }
 
-
-    .logo-dincontrol {
-        width: 440px;
-
-        margin-bottom: -8px;
-    }
 
 
     .redefinirsenha {
@@ -653,15 +588,6 @@ and (max-height: 899px) {
     }
 
 
-    .Coin {
-        width: 240px;
-
-        right: 5px;
-        bottom: 3px;
-
-        max-height: 42vh;
-    }
-
 }
 
 
@@ -682,12 +608,6 @@ and (min-height: 900px) {
         padding-bottom: 270px;
     }
 
-
-    .logo-dincontrol {
-        width: 500px;
-
-        margin-bottom: 5px;
-    }
 
 
     .redefinirsenha {
@@ -733,17 +653,6 @@ and (min-height: 900px) {
     }
 
 
-    .Coin {
-        position: absolute;
-
-        width: 270px;
-
-        right: 5px;
-        bottom: 5px;
-
-        max-height: none;
-    }
-
 }
 
 
@@ -765,16 +674,6 @@ and (max-width: 900px) {
             220px;
     }
 
-
-    .logo-dincontrol {
-        width:
-            min(
-                460px,
-                75vw
-            );
-
-        margin-bottom: 3px;
-    }
 
 
     .redefinirsenha {
@@ -824,17 +723,6 @@ and (max-width: 900px) {
     }
 
 
-    .Coin {
-        position: absolute;
-
-        width: 215px;
-
-        right: 3px;
-        bottom: 3px;
-
-        max-height: none;
-    }
-
 }
 
 
@@ -858,16 +746,6 @@ and (max-width: 600px) {
 
 
     /* LOGO */
-
-    .logo-dincontrol {
-        width:
-            min(
-                350px,
-                88vw
-            );
-
-        margin-bottom: 0;
-    }
 
 
     /* CARD */
@@ -972,17 +850,6 @@ and (max-width: 600px) {
 
     /* COIN */
 
-    .Coin {
-        position: absolute;
-
-        width: 155px;
-
-        right: 0;
-        bottom: 2px;
-
-        max-height: none;
-    }
-
 }
 
 
@@ -1003,16 +870,6 @@ and (max-width: 400px) {
             145px;
     }
 
-
-    .logo-dincontrol {
-        width:
-            min(
-                310px,
-                88vw
-            );
-
-        margin-bottom: 0;
-    }
 
 
     .redefinirsenha {
@@ -1100,16 +957,5 @@ and (max-width: 400px) {
         font-size: 8px;
     }
 
-
-    .Coin {
-        position: absolute;
-
-        width: 130px;
-
-        right: 0;
-        bottom: 0;
-
-        max-height: none;
-    }
 
 }

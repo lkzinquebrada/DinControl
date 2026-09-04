@@ -3,6 +3,8 @@ import type { FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import styles from './LoginPage.module.css'
 import { LoadingScreen } from '../../components/layout/LoadingScreen'
+import { AuthLogo } from '../../components/layout/AuthLogo'
+import { AuthCoin } from '../../components/layout/AuthCoin'
 import { login } from '../../api/auth'
 import { ApiError } from '../../api/client'
 import { useAuth } from '../../context/AuthContext'
@@ -40,11 +42,7 @@ export function LoginPage() {
       <LoadingScreen estilizado={false} />
 
       <div className={styles['conteudo-login']}>
-        <img
-          src="/assets/Logo.png"
-          alt="DinControl"
-          className={styles['logo-dincontrol']}
-        />
+        <AuthLogo />
 
         <div className={styles.login}>
           <h1 className={styles.T}>Seja Bem Vindo(a)</h1>
@@ -103,7 +101,7 @@ export function LoginPage() {
         </div>
       </div>
 
-      <img src="/assets/Coin.png" alt="Coin1" className={styles.Coin} />
+      <AuthCoin />
     </>
   )
 }

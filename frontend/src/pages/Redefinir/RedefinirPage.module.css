@@ -42,15 +42,6 @@
    LOGO
 ===================================================== */
 
-.logo-dincontrol {
-    width: 750px;
-    height: auto;
-
-    display: block;
-
-    margin-bottom: -15px;
-}
-
 /* =====================================================
    BOX CADASTRO
 ===================================================== */
@@ -211,24 +202,6 @@
    COIN
 ===================================================== */
 
-.Coin {
-    position: fixed;
-
-    right: 30px;
-    bottom: 20px;
-
-    width: 600px;
-    height: auto;
-
-    max-height: 70vh;
-
-    object-fit: contain;
-
-    z-index: 2;
-
-    pointer-events: none;
-}
-
 /* =========================================================
    RESPONSIVIDADE - REDEFINIR SENHA
    PRIMEIRA TELA: E-MAIL + CÓDIGO
@@ -261,18 +234,6 @@ and (max-height: 899px) {
 
 
     /* LOGO */
-
-    .logo-dincontrol {
-        position: absolute !important;
-
-        top: -20px !important;
-        left: -20px !important;
-
-        width: 430px !important;
-        height: auto !important;
-
-        transform: none !important;
-    }
 
 
     /* CARD */
@@ -356,19 +317,6 @@ and (max-height: 899px) {
 
     /* COIN */
 
-    .Coin {
-        position: fixed !important;
-
-        right: 10px !important;
-        bottom: 5px !important;
-
-        width: 245px !important;
-        height: auto !important;
-
-        max-width: none !important;
-        max-height: 43vh !important;
-    }
-
 }
 
 
@@ -398,19 +346,6 @@ and (min-height: 900px) {
 
 
     /* LOGO */
-
-    .logo-dincontrol {
-        position: absolute !important;
-
-        top: 30px !important;
-        left: 35px !important;
-
-        width: 440px !important;
-
-        height: auto !important;
-
-        transform: none !important;
-    }
 
 
     /* CARD */
@@ -493,19 +428,6 @@ and (min-height: 900px) {
 
     /* COIN */
 
-    .Coin {
-        position: absolute !important;
-
-        right: 15px !important;
-        bottom: 15px !important;
-
-        width: 290px !important;
-        height: auto !important;
-
-        max-width: none !important;
-        max-height: none !important;
-    }
-
 }
 
 
@@ -536,19 +458,6 @@ and (max-width: 900px) {
 
 
     /* LOGO */
-
-    .logo-dincontrol {
-        position: absolute !important;
-
-        top: 20px !important;
-        left: 50% !important;
-
-        width: min(440px, 72vw) !important;
-
-        height: auto !important;
-
-        transform: translateX(-50%) !important;
-    }
 
 
     /* CARD */
@@ -631,20 +540,6 @@ and (max-width: 900px) {
 
     /* COIN */
 
-    .Coin {
-        position: absolute !important;
-
-        right: 10px !important;
-        bottom: 5px !important;
-
-        width: 230px !important;
-
-        height: auto !important;
-
-        max-width: none !important;
-        max-height: none !important;
-    }
-
 }
 
 
@@ -680,20 +575,6 @@ and (max-width: 600px) {
 
 
     /* LOGO */
-
-    .logo-dincontrol {
-        position: absolute !important;
-
-        top: 12px !important;
-        left: 50% !important;
-
-        width: min(340px, 85vw) !important;
-
-        height: auto !important;
-
-        transform:
-            translateX(-50%) !important;
-    }
 
 
     /* CARD */
@@ -793,20 +674,6 @@ and (max-width: 600px) {
 
     /* COIN */
 
-    .Coin {
-        position: absolute !important;
-
-        right: 0 !important;
-        bottom: 5px !important;
-
-        width: 175px !important;
-
-        height: auto !important;
-
-        max-width: none !important;
-        max-height: none !important;
-    }
-
 }
 
 
@@ -841,20 +708,6 @@ and (max-width: 400px) {
 
 
     /* LOGO */
-
-    .logo-dincontrol {
-        position: absolute !important;
-
-        top: 10px !important;
-        left: 50% !important;
-
-        width: min(310px, 85vw) !important;
-
-        height: auto !important;
-
-        transform:
-            translateX(-50%) !important;
-    }
 
 
     /* CARD */
@@ -957,20 +810,6 @@ and (max-width: 400px) {
 
     /* COIN */
 
-    .Coin {
-        position: absolute !important;
-
-        right: 0 !important;
-        bottom: 5px !important;
-
-        width: 145px !important;
-
-        height: auto !important;
-
-        max-width: none !important;
-        max-height: none !important;
-    }
-
 }
 
 /* =========================================================
@@ -1011,15 +850,6 @@ and (max-height: 899px) {
     /* =====================================================
        LOGO
     ===================================================== */
-
-    .logo-dincontrol {
-        width: 560px;
-        height: auto;
-
-        margin-bottom: -5px;
-
-        transform: none;
-    }
 
 
     /* =====================================================
@@ -1162,22 +992,5 @@ and (max-height: 899px) {
        COIN
        NÃO INVADE MAIS O CARD
     ===================================================== */
-
-    .Coin {
-        position: fixed;
-
-        width: 340px;
-        height: auto;
-
-        right: 10px;
-        bottom: 5px;
-
-        max-width: none;
-        max-height: 47vh;
-
-        object-fit: contain;
-
-        z-index: 2;
-    }
 
 }

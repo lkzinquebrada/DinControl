@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState } from 'react'
 import styles from './HistoricoPage.module.css'
 import { LoadingScreen } from '../../components/layout/LoadingScreen'
+import { AppLogo } from '../../components/layout/AppLogo'
+import { AppCoin } from '../../components/layout/AppCoin'
 import { NavMenu } from '../../components/layout/NavMenu'
 import { ProfileButton } from '../../components/layout/ProfileButton'
 import { HistoryFilters } from '../../components/transactions/HistoryFilters'
@@ -102,7 +104,7 @@ export function HistoricoPage() {
       <LoadingScreen atraso={0} estilizado={false} />
 
       <div className={styles['pagina-historico']}>
-        <img src="/assets/Logo.png" alt="DinControl" className={styles['logo-dincontrol']} />
+        <AppLogo />
 
         <ProfileButton
           styles={styles}
@@ -164,9 +166,9 @@ export function HistoricoPage() {
             <TransactionHistory styles={styles} transacoes={transacoesFiltradas} onDeleted={aoExcluir} />
           )}
         </main>
-      </div>
 
-      <img src="/assets/Coin.png" alt="Coin" className={styles.Coin} />
+        <AppCoin />
+      </div>
     </>
   )
 }

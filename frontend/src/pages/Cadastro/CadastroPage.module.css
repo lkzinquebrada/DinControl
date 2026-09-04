@@ -43,15 +43,6 @@
    LOGO
 ===================================================== */
 
-.logo-dincontrol {
-    width: 750px;
-    height: auto;
-
-    display: block;
-
-    margin-bottom: -15px;
-}
-
 
 /* =====================================================
    BOX CADASTRO
@@ -271,24 +262,6 @@
    COIN
 ===================================================== */
 
-.Coin {
-    position: fixed;
-
-    right: 30px;
-    bottom: 20px;
-
-    width: 600px;
-    height: auto;
-
-    max-height: 70vh;
-
-    object-fit: contain;
-
-    z-index: 2;
-
-    pointer-events: none;
-}
-
 
 /* =====================================================
    PC / NOTEBOOK
@@ -302,12 +275,6 @@
         padding-top: 15px;
     }
 
-
-    .logo-dincontrol {
-        width: 590px;          /* logo um pouco maior */
-        margin-bottom: -25px;  /* aproxima a logo da box */
-        transform: translateY(-38px);
-    }
 
     .cadastro {
         width: 330px;          /* box um pouco menor/larga */
@@ -353,12 +320,6 @@
     }
 
 
-    .Coin {
-        width: 370px;
-
-        right: 10px;
-        bottom: 10px;
-    }
 }
 
 
@@ -375,12 +336,6 @@
         padding-top: 5px;
     }
 
-
-    .logo-dincontrol {
-        width: 470px;
-
-        margin-bottom: -14px;
-    }
 
 
     .cadastro {
@@ -466,14 +421,6 @@
     }
 
 
-    .Coin {
-        width: 340px;
-
-        right: 8px;
-        bottom: 0;
-
-        max-height: 48vh;
-    }
 }
 
 
@@ -503,14 +450,6 @@
         align-items: center;
     }
 
-
-    .logo-dincontrol {
-        width: 430px;
-        height: auto;
-
-        margin-top: 0;
-        margin-bottom: -12px;
-    }
 
 
     .cadastro {
@@ -610,13 +549,6 @@
     }
 
 
-    .Coin {
-        width: 220px;
-        height: auto;
-
-        right: -8px;
-        bottom: 0;
-    }
 }
 
 
@@ -635,13 +567,6 @@
         min-height: 100vh;
     }
 
-
-    .logo-dincontrol {
-        width: 600px;
-        height: auto;
-
-        margin-bottom: 15px;
-    }
 
 
     .cadastro {
@@ -734,14 +659,6 @@
     }
 
 
-    .Coin {
-        width: 330px;
-
-        right: 10px;
-        bottom: 5px;
-
-        max-height: 40vh;
-    }
 }
 
 
@@ -760,13 +677,6 @@
         min-height: 100vh;
     }
 
-
-    .logo-dincontrol {
-        width: 520px;
-        height: auto;
-
-        margin-bottom: 10px;
-    }
 
 
     .cadastro {
@@ -864,14 +774,6 @@
     }
 
 
-    .Coin {
-        width: 285px;
-
-        right: 5px;
-        bottom: 5px;
-
-        max-height: 38vh;
-    }
 }
 
 
@@ -890,13 +792,6 @@
         min-height: 100vh;
     }
 
-
-    .logo-dincontrol {
-        width: 480px;
-        height: auto;
-
-        margin-bottom: 8px;
-    }
 
 
     .cadastro {
@@ -994,14 +889,6 @@
     }
 
 
-    .Coin {
-        width: 255px;
-
-        right: 5px;
-        bottom: 0;
-
-        max-height: 36vh;
-    }
 }
 
 
@@ -1021,13 +908,6 @@
         overflow-x: hidden;
     }
 
-
-    .logo-dincontrol {
-        width: 330px;
-        height: auto;
-
-        margin-bottom: 5px;
-    }
 
 
     .cadastro {
@@ -1127,14 +1007,6 @@
     }
 
 
-    .Coin {
-        width: 180px;
-
-        right: -5px;
-        bottom: 0;
-
-        max-height: 28vh;
-    }
 }
 
 
@@ -1153,13 +1025,6 @@
         overflow-x: hidden;
     }
 
-
-    .logo-dincontrol {
-        width: 285px;
-        height: auto;
-
-        margin-bottom: -2px;
-    }
 
 
     .cadastro {
@@ -1259,12 +1124,4 @@
     }
 
 
-    .Coin {
-        width: 145px;
-
-        right: -5px;
-        bottom: 0;
-
-        max-height: 25vh;
-    }
 }

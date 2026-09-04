@@ -39,19 +39,6 @@
    LOGO
 ===================================================== */
 
-.logo-dincontrol {
-    position: absolute;
-
-    top: -20px;
-    left: -25px;
-
-    width: 600px;
-
-    height: auto;
-
-    z-index: 10;
-}
-
 
 /* =====================================================
    PERFIL
@@ -640,10 +627,6 @@
 and (min-width: 1450px)
 and (max-width: 1699px) {
 
-    .logo-dincontrol {
-        width: 520px;
-    }
-
 
     .card-historico {
         top: 220px;
@@ -667,12 +650,6 @@ and (max-width: 1699px) {
 @media screen
 and (min-width: 1150px)
 and (max-width: 1449px) {
-
-    .logo-dincontrol {
-        width: 440px;
-
-        top: 0;
-    }
 
 
     .area-perfil {
@@ -739,13 +716,6 @@ and (max-height: 899px) {
         min-height: 600px;
     }
 
-
-    .logo-dincontrol {
-        top: 5px;
-        left: 10px;
-
-        width: 350px;
-    }
 
 
     .area-perfil {
@@ -903,13 +873,6 @@ and (min-height: 900px) {
        LOGO
     ================================================= */
 
-    .logo-dincontrol {
-        width: 480px;
-
-        top: 15px;
-        left: 15px;
-    }
-
 
     /* =================================================
        PERFIL
@@ -1012,21 +975,9 @@ and (max-width: 900px) {
         padding:
             0
             20px
-            250px;
+            420px;
     }
 
-
-    .logo-dincontrol {
-        position: relative;
-
-        top: 15px;
-        left: 50%;
-
-        width: min(450px, 75vw);
-
-        transform:
-            translateX(-50%);
-    }
 
 
     .area-perfil {
@@ -1111,21 +1062,9 @@ and (max-width: 600px) {
         padding:
             0
             10px
-            210px;
+            380px;
     }
 
-
-    .logo-dincontrol {
-        position: relative;
-
-        top: 10px;
-        left: 50%;
-
-        width: min(340px, 88vw);
-
-        transform:
-            translateX(-50%);
-    }
 
 
     .area-perfil {
@@ -1285,21 +1224,9 @@ and (max-width: 400px) {
         padding:
             0
             8px
-            180px;
+            345px;
     }
 
-
-    .logo-dincontrol {
-        position: relative;
-
-        top: 10px;
-        left: 50%;
-
-        width: min(310px, 85vw);
-
-        transform:
-            translateX(-50%);
-    }
 
 
     .area-perfil {
@@ -1481,10 +1408,6 @@ and (max-width: 400px) {
    APARECE SOMENTE EM DESKTOP
 ========================================================= */
 
-.Coin {
-    display: none;
-}
-
 
 /* =========================================================
    1024 x 600
@@ -1494,27 +1417,6 @@ and (max-width: 400px) {
 and (min-width: 901px)
 and (max-width: 1149px)
 and (max-height: 899px) {
-
-    .Coin {
-        display: block;
-
-        position: fixed;
-
-        right: 8px;
-        bottom: 3px;
-
-        width: 230px;
-        height: auto;
-
-        max-width: none;
-        max-height: 45vh;
-
-        object-fit: contain;
-
-        pointer-events: none;
-
-        z-index: 3;
-    }
 
 }
 
@@ -1527,27 +1429,6 @@ and (max-height: 899px) {
 and (min-width: 1150px)
 and (max-width: 1449px) {
 
-    .Coin {
-        display: block;
-
-        position: fixed;
-
-        right: 10px;
-        bottom: 5px;
-
-        width: 310px;
-        height: auto;
-
-        max-width: none;
-        max-height: 48vh;
-
-        object-fit: contain;
-
-        pointer-events: none;
-
-        z-index: 3;
-    }
-
 }
 
 
@@ -1559,27 +1440,6 @@ and (max-width: 1449px) {
 and (min-width: 1450px)
 and (max-width: 1699px) {
 
-    .Coin {
-        display: block;
-
-        position: fixed;
-
-        right: 18px;
-        bottom: 5px;
-
-        width: 390px;
-        height: auto;
-
-        max-width: none;
-        max-height: 52vh;
-
-        object-fit: contain;
-
-        pointer-events: none;
-
-        z-index: 3;
-    }
-
 }
 
 
@@ -1589,26 +1449,5 @@ and (max-width: 1699px) {
 
 @media screen
 and (min-width: 1700px) {
-
-    .Coin {
-        display: block;
-
-        position: fixed;
-
-        right: 25px;
-        bottom: 10px;
-
-        width: 500px;
-        height: auto;
-
-        max-width: none;
-        max-height: 60vh;
-
-        object-fit: contain;
-
-        pointer-events: none;
-
-        z-index: 3;
-    }
 
 }
