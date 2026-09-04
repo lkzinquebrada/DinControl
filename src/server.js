@@ -27,7 +27,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(
     express.static(
-        path.join(__dirname, "..", "Public")
+        path.join(__dirname, "..", "frontend", "dist")
     )
 );
 
@@ -183,15 +183,6 @@ function autenticarUsuario(req, res, next) {
         });
     }
 }
-
-
-// =====================================================
-// ROTA INICIAL
-// =====================================================
-
-app.get("/", (req, res) => {
-    return res.redirect("/login/login.html");
-});
 
 
 // =====================================================
@@ -1521,6 +1512,35 @@ app.post(
                     "Erro ao redefinir senha."
             });
         }
+    }
+);
+
+
+// =====================================================
+// SPA FALLBACK (React Router)
+// =====================================================
+//
+// Qualquer rota GET que não seja um arquivo estático nem uma
+// das rotas de API acima serve o index.html do build do React,
+// que assume o roteamento no cliente (inclusive "/").
+//
+// Só "/me" e "/transactions" precisam ficar de fora: são as
+// únicas rotas de API que respondem a GET. As demais (/users,
+// /login, /logout, /forgot-password/*) só existem como POST, então
+// um GET nesses mesmos caminhos é sempre navegação de página.
+
+app.get(
+    /^(?!\/(me|transactions)(\/|$)).*/,
+    (req, res) => {
+        res.sendFile(
+            path.join(
+                __dirname,
+                "..",
+                "frontend",
+                "dist",
+                "index.html"
+            )
+        );
     }
 );
 
