@@ -1062,7 +1062,7 @@ and (max-width: 600px) {
         padding:
             0
             10px
-            380px;
+            422px;
     }
 
 
@@ -1091,7 +1091,7 @@ and (max-width: 600px) {
 
 
     .area-menu {
-        top: 136px;
+        top: 144px;
         right: 20px;
     }
 
@@ -1114,7 +1114,7 @@ and (max-width: 600px) {
     .card-historico {
         position: relative;
 
-        top: 195px;
+        top: 237px;
         left: auto;
 
         width: 100%;
@@ -1224,7 +1224,7 @@ and (max-width: 400px) {
         padding:
             0
             8px
-            345px;
+            373px;
     }
 
 
@@ -1255,7 +1255,7 @@ and (max-width: 400px) {
 
 
     .area-menu {
-        top: 118px;
+        top: 134px;
         right: 15px;
     }
 
@@ -1287,7 +1287,7 @@ and (max-width: 400px) {
     .card-historico {
         position: relative;
 
-        top: 190px;
+        top: 218px;
         left: auto;
 
         width: 100%;
