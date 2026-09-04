@@ -1,5 +1,5 @@
 # DinControl
-Sistema de controle financeiro pessoal com Node.js, Express, PostgreSQL, HTML, CSS, JavaScript e Chart.js.
+Sistema de controle financeiro desenvolvido com React, TypeScript, Vite, HTML, CSS e Chart.js no frontend, e Node.js, Express e PostgreSQL no backend.
 
 ## Equipe de Desenvolvimento
 
