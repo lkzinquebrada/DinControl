@@ -1,0 +1,25 @@
+/* =====================================================
+   GLOBAL RESET
+   Shared by every page (previously duplicated verbatim as
+   `* {}` / `html, body {}` at the top of every legacy .css
+   file). Page-specific `body { ... }` rules were moved onto
+   each page's own root wrapper element, since CSS Modules
+   only scope class/id selectors — a bare `body` rule from
+   any page's module would otherwise leak onto every route.
+===================================================== */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html,
+body {
+    width: 100%;
+    min-height: 100%;
+}
+
+#root {
+    min-height: 100%;
+}

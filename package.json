@@ -4,7 +4,9 @@
   "description": "Sistema de controle financeiro pessoal",
   "main": "src/server.js",
   "scripts": {
-    "start": "node src/server.js"
+    "start": "node src/server.js",
+    "build": "npm install --prefix frontend && npm run build --prefix frontend",
+    "postinstall": "npm run build"
   },
   "keywords": [],
   "author": "",

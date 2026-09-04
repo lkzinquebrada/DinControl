@@ -27,7 +27,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(
     express.static(
-        path.join(__dirname, "..", "Public")
+        path.join(__dirname, "..", "frontend", "dist")
     )
 );
 
@@ -72,6 +72,36 @@ async function validarEmail(email) {
 
         return false;
     }
+}
+
+
+function possuiSequenciaNumerica(senha) {
+    const digitos =
+        senha.split("").map(Number);
+
+    for (
+        let i = 0;
+        i <= digitos.length - 3;
+        i++
+    ) {
+        const a = digitos[i];
+        const b = digitos[i + 1];
+        const c = digitos[i + 2];
+
+        const crescente =
+            b === a + 1 &&
+            c === b + 1;
+
+        const decrescente =
+            b === a - 1 &&
+            c === b - 1;
+
+        if (crescente || decrescente) {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 
@@ -156,15 +186,6 @@ function autenticarUsuario(req, res, next) {
 
 
 // =====================================================
-// ROTA INICIAL
-// =====================================================
-
-app.get("/", (req, res) => {
-    return res.redirect("/login/login.html");
-});
-
-
-// =====================================================
 // CADASTRAR USUÁRIO
 // =====================================================
 
@@ -197,19 +218,10 @@ app.post("/users", async (req, res) => {
             });
         }
 
-        const numeros =
-            senha.split("");
-
-        const numerosUnicos =
-            new Set(numeros);
-
-        if (
-            numerosUnicos.size !==
-            numeros.length
-        ) {
+        if (possuiSequenciaNumerica(senha)) {
             return res.status(400).json({
                 erro:
-                    "A senha não pode conter números repetidos."
+                    "A senha não pode conter sequências numéricas óbvias (ex: 1234, 4321)."
             });
         }
 
@@ -1378,19 +1390,10 @@ app.post(
                 });
             }
 
-            const numeros =
-                novaSenha.split("");
-
-            const numerosUnicos =
-                new Set(numeros);
-
-            if (
-                numerosUnicos.size !==
-                numeros.length
-            ) {
+            if (possuiSequenciaNumerica(novaSenha)) {
                 return res.status(400).json({
                     erro:
-                        "A senha não pode conter números repetidos."
+                        "A senha não pode conter sequências numéricas óbvias (ex: 1234, 4321)."
                 });
             }
 
@@ -1509,6 +1512,35 @@ app.post(
                     "Erro ao redefinir senha."
             });
         }
+    }
+);
+
+
+// =====================================================
+// SPA FALLBACK (React Router)
+// =====================================================
+//
+// Qualquer rota GET que não seja um arquivo estático nem uma
+// das rotas de API acima serve o index.html do build do React,
+// que assume o roteamento no cliente (inclusive "/").
+//
+// Só "/me" e "/transactions" precisam ficar de fora: são as
+// únicas rotas de API que respondem a GET. As demais (/users,
+// /login, /logout, /forgot-password/*) só existem como POST, então
+// um GET nesses mesmos caminhos é sempre navegação de página.
+
+app.get(
+    /^(?!\/(me|transactions)(\/|$)).*/,
+    (req, res) => {
+        res.sendFile(
+            path.join(
+                __dirname,
+                "..",
+                "frontend",
+                "dist",
+                "index.html"
+            )
+        );
     }
 );
 
